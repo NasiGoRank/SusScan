@@ -68,33 +68,47 @@ You need:
 
 ---
 
-## Repository Layout
-
-Expected repository layout:
+## Project Structure
 
 ```text
 SusScan/
 ├── README.md
 ├── .gitignore
+├── .gitattributes
 ├── .env.example
 ├── install.sh
-├── main.py
-├── config.py
-├── db.py
-├── schemas.py
-├── services/
-├── templates/
-├── utils/
+├── rule.sh
+├── app/
+│   ├── main.py
+│   ├── config.py
+│   ├── db.py
+│   ├── schemas.py
+│   ├── services/
+│   ├── templates/
+│   ├── utils/
+│   └── static/
 ├── rules/
-└── rule.sh
+│   ├── correlation/
+│   │   ├── current/
+│   │   │   ├── global_rules.json
+│   │   │   ├── windows_pe_rules.json
+│   │   │   └── android_apk_rules.json
+│   │   ├── feature_catalog.json
+│   │   ├── manifest.json
+│   │   └── references.json
+│   ├── filtered/
+│   ├── sources/
+│   └── compiled/
+├── docs/
+└── scripts/
 ```
 
 Important notes:
 
-- Put the installer in the **repo root**
-- Keep `rules/` in the **repo root** if you want the installer to sync them automatically
-- Keep `rule.sh` in the **repo root** if you want the installer to copy and run it automatically
-
+- Put `install.sh` in the **repo root**
+- Put all application source code in the **`app/`** folder
+- Put bundled rules in the **`rules/`** folder
+- Put `rule.sh` in the **repo root** if you want the installer to copy and run it automatically
 ---
 
 ## Installation
@@ -116,9 +130,9 @@ What the installer does:
 
 - installs required system packages
 - creates `/opt/SusScan`
-- creates Python virtual environment
+- creates the Python virtual environment
 - installs Python dependencies
-- copies app source into `/opt/SusScan/app`
+- copies `app/` into `/opt/SusScan/app`
 - copies bundled `rules/` into `/opt/SusScan/rules`
 - copies and runs `rule.sh` if present
 - creates `/opt/SusScan/.env.example`
