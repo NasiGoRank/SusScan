@@ -208,49 +208,60 @@ prompt_secret() {
 }
 
 sync_app_source_if_present() {
-  if [[ -f "${SCRIPT_DIR}/main.py" && -d "${SCRIPT_DIR}/services" && -d "${SCRIPT_DIR}/templates" ]]; then
-    log "Syncing application source into ${APP_DIR}..."
-    rsync -a --delete \
-      --exclude '.git/' \
-      --exclude '__pycache__/' \
-      --exclude '*.pyc' \
-      --exclude 'venv/' \
-      --exclude '.env' \
-      --exclude '.env.*' \
-      --exclude 'data/' \
-      --exclude 'tools/' \
-      --exclude 'rules/' \
-      --exclude 'install*.sh' \
-      "${SCRIPT_DIR}/" "${APP_DIR}/"
-  else
-    warn "Installer did not detect app source files next to install script."
-    warn "Make sure your code is placed in ${APP_DIR} before starting the service."
+  local src_root="${REPO_ROOT}/app"
+
+  if [[ ! -d "${src_root}" ]]; then
+    fail "Expected app source directory at ${src_root}, but it was not found."
   fi
+
+  if [[ ! -f "${src_root}/main.py" ]]; then
+    fail "Expected ${src_root}/main.py, but it was not found."
+  fi
+
+  log "Syncing app folder from ${src_root} into ${APP_DIR}..."
+  mkdir -p "${APP_DIR}"
+
+  rsync -a --delete \
+    --exclude '.git/' \
+    --exclude '__pycache__/' \
+    --exclude '*.pyc' \
+    --exclude '*.pyo' \
+    --exclude '*.pyd' \
+    --exclude '.pytest_cache/' \
+    --exclude '.mypy_cache/' \
+    --exclude '.venv/' \
+    --exclude 'venv/' \
+    --exclude 'env/' \
+    --exclude '.env' \
+    --exclude '.env.*' \
+    --exclude '*.db' \
+    --exclude '*.sqlite' \
+    --exclude '*.sqlite3' \
+    --exclude '*.log' \
+    --exclude 'data/' \
+    --exclude 'tools/' \
+    --exclude '*.zip' \
+    --exclude '*.tar' \
+    --exclude '*.gz' \
+    "${src_root}/" "${APP_DIR}/"
 }
 
 sync_rule_assets_if_present() {
-  local rule_script_source=""
+  local rules_source="${REPO_ROOT}/rules"
 
-  log "Syncing bundled rule assets from the repository if present..."
-  if [[ -d "${REPO_ROOT}/rules" ]]; then
+  if [[ -d "${rules_source}" ]]; then
+    log "Syncing bundled rules from ${rules_source} into ${RULES_DIR}..."
     mkdir -p "${RULES_DIR}"
-    cp -a "${REPO_ROOT}/rules/." "${RULES_DIR}/"
-    log "Bundled rules copied from ${REPO_ROOT}/rules -> ${RULES_DIR}"
+    rsync -a "${rules_source}/" "${RULES_DIR}/"
   else
-    warn "No bundled rules directory found at ${REPO_ROOT}/rules; skipping repo rule sync."
+    warn "No rules directory found at ${rules_source}; skipping bundled rule sync."
   fi
 
   if [[ -f "${REPO_ROOT}/rule.sh" ]]; then
-    rule_script_source="${REPO_ROOT}/rule.sh"
-  elif [[ -f "${APP_DIR}/rule.sh" ]]; then
-    rule_script_source="${APP_DIR}/rule.sh"
-  fi
-
-  if [[ -n "${rule_script_source}" ]]; then
     log "Installing rule.sh helper..."
-    install -m 0755 "${rule_script_source}" "${APP_ROOT}/rule.sh"
+    install -m 0755 "${REPO_ROOT}/rule.sh" "${APP_ROOT}/rule.sh"
   else
-    warn "No rule.sh found in the repository or app directory; skipping rule helper install."
+    warn "No rule.sh found at ${REPO_ROOT}/rule.sh; skipping rule helper install."
   fi
 }
 
