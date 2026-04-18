@@ -391,6 +391,6 @@ dist/
 
 ---
 
-## License
+## 📄 License
 
-Add your preferred license here.
+This project is licensed under the MIT License - see the LICENSE file for details.
