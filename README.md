@@ -335,15 +335,6 @@ Change the configured port in the systemd service if another process is already 
 
 ---
 
-## Security Notes
-
-- Do **not** commit your real `.env`
-- Keep only `.env.example` in Git
-- Rotate any API keys that were ever pasted into chat, screenshots, terminal history, or public files
-- Do not expose this app directly to the public internet without proper hardening and reverse proxying
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
