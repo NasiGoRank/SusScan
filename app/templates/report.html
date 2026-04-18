@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Report {{ report.get('job_id', '-') }}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slatex: {
+                            900: '#152f63',
+                            700: '#2b5a9d',
+                            500: '#548bc2',
+                            200: '#b1d7e5',
+                        }
+                    },
+                    boxShadow: {
+                        glass: '0 12px 40px rgba(10, 22, 48, 0.22)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(84, 139, 194, 0.28), transparent 28%),
+                radial-gradient(circle at top right, rgba(177, 215, 229, 0.24), transparent 24%),
+                linear-gradient(180deg, #0d1c3d 0%, #17386f 38%, #25589b 68%, #b1d7e5 100%);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 12px 40px rgba(10, 22, 48, 0.20);
+        }
+
+        .glass-soft {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 10px 28px rgba(10, 22, 48, 0.14);
+        }
+
+        .glass-reflect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-reflect::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg,
+                    rgba(255, 255, 255, 0.22) 0%,
+                    rgba(255, 255, 255, 0.07) 18%,
+                    rgba(255, 255, 255, 0.01) 42%,
+                    rgba(255, 255, 255, 0.10) 70%,
+                    rgba(255, 255, 255, 0.22) 100%);
+            opacity: 0.42;
+            pointer-events: none;
+        }
+
+        .grid-fade {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15));
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15));
+        }
+
+        .pretty-pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .chat-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+        }
+
+        .chat-message {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .chat-panel {
+            transform: translateY(-50%) scale(0.86);
+            transform-origin: right center;
+            opacity: 0;
+            pointer-events: none;
+            transition:
+                transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 180ms ease;
+        }
+
+        .chat-panel.open {
+            transform: translateY(-50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .chat-fab-open {
+            background: rgba(255, 255, 255, 0.22) !important;
+        }
+
+        @media (max-width: 768px) {
+            .chat-panel {
+                transform: translateY(14px) scale(0.98);
+                transform-origin: center bottom;
+                top: 12px !important;
+                left: 12px !important;
+                right: 12px !important;
+                width: auto !important;
+                height: calc(100vh - 24px) !important;
+            }
+
+            .chat-panel.open {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease;
+        }
+
+        .confirm-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .confirm-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(8, 15, 35, 0.46);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .confirm-modal-card {
+            position: relative;
+            width: min(100%, 30rem);
+            border-radius: 1.75rem;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            box-shadow: 0 18px 50px rgba(10, 22, 48, 0.28);
+            overflow: hidden;
+            transform: scale(0.92) translateY(10px);
+            transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .confirm-modal.open .confirm-modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-modal-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg,
+                    rgba(255, 255, 255, 0.20) 0%,
+                    rgba(255, 255, 255, 0.06) 18%,
+                    rgba(255, 255, 255, 0.01) 42%,
+                    rgba(255, 255, 255, 0.10) 70%,
+                    rgba(255, 255, 255, 0.20) 100%);
+            opacity: 0.42;
+            pointer-events: none;
+        }
+
+        .confirm-danger {
+            background: rgba(244, 63, 94, 0.16);
+            border: 1px solid rgba(251, 113, 133, 0.24);
+            color: #ffe4e6;
+        }
+    </style>
+</head>
+
+<body class="text-white antialiased">
+    {% set file_info = report.get('file_info', {}) %}
+    {% set risk = report.get('risk', {}) %}
+    {% set common = report.get('common_analysis', {}) %}
+    {% set yara_matches = common.get('yara_matches', []) %}
+
+    {% set trust = report.get('trust_analysis', {}) %}
+    {% set trust_decision = trust.get('trust_decision', {}) %}
+    {% set hash_lookup = trust.get('hash_lookup', {}) %}
+    {% set signature_verification = trust.get('signature_verification', {}) %}
+    {% set reputation_summary = trust.get('reputation_summary', {}) %}
+    {% set provider_attempts = trust.get('reputation_providers', []) %}
+
+    {% set pe = report.get('pe_analysis', {}) %}
+    {% set pe_meta = pe.get('metadata', {}) %}
+    {% set pe_sections = pe_meta.get('sections', []) %}
+    {% set pe_structural = pe.get('structural_evidence', {}) %}
+
+    {% set apk = report.get('apk_analysis', {}) %}
+    {% set apk_meta = apk.get('metadata', {}) %}
+    {% set apk_permissions = apk_meta.get('permissions', []) %}
+    {% set apk_structural = apk.get('structural_evidence', {}) %}
+
+    {% set correlation = report.get('correlation', {}) %}
+    {% set fired_rules = correlation.get('fired_rules', []) %}
+
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="absolute left-[-120px] top-[-120px] h-72 w-72 rounded-full bg-slatex-500/25 blur-3xl"></div>
+        <div class="absolute right-[-100px] top-[140px] h-72 w-72 rounded-full bg-slatex-200/20 blur-3xl"></div>
+        <div class="absolute bottom-[-100px] left-[20%] h-80 w-80 rounded-full bg-slatex-700/20 blur-3xl"></div>
+        <div class="absolute inset-0 grid-fade opacity-30"></div>
+    </div>
+
+    <header class="sticky top-0 z-40">
+        <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+            <nav class="glass glass-reflect flex items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
+                <a href="/" class="flex items-center gap-3">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg font-bold text-white">
+                        S
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold tracking-wide text-white">SusScan</p>
+                        <p class="text-xs text-white/70">Report View</p>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-2">
+                    <a href="/jobs/{{ job.id }}"
+                        class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">Back
+                        to Job</a>
+                    <a href="/report/{{ job.id }}?format=json"
+                        class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                        Report JSON
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-6 lg:px-8">
+        <section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8 lg:p-10">
+                <div
+                    class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/85">
+                    Normalized Analysis Report
+                </div>
+
+                <h1 class="mt-5 text-4xl font-bold leading-tight sm:text-5xl">
+                    Report for <span class="text-slatex-200">{{ file_info.get('original_name', report.get('job_id',
+                        '-')) }}</span>
+                </h1>
+
+                <p class="mt-4 max-w-3xl text-base leading-7 text-white/78 sm:text-lg">
+                    Analyst-focused summary of the current artifact, including risk, trust signals, YARA results,
+                    correlation trace, and artifact-specific findings.
+                </p>
+
+                <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/55">Artifact Type</p>
+                        <p class="mt-2 text-lg font-semibold text-white">{{ report.get('artifact_type', '-') }}</p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/55">Risk Score</p>
+                        <p class="mt-2 text-lg font-semibold text-white">{{ risk.get('score', 0) }}</p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/55">Risk Level</p>
+                        {% set risk_level = risk.get('level', 'low') %}
+                        {% if risk_level == 'high' %}
+                        <span
+                            class="mt-2 inline-flex rounded-full bg-rose-400/15 px-3 py-1 text-sm font-semibold text-rose-100">High</span>
+                        {% elif risk_level == 'medium' %}
+                        <span
+                            class="mt-2 inline-flex rounded-full bg-amber-400/15 px-3 py-1 text-sm font-semibold text-amber-100">Medium</span>
+                        {% else %}
+                        <span
+                            class="mt-2 inline-flex rounded-full bg-emerald-400/15 px-3 py-1 text-sm font-semibold text-emerald-100">Low</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                <p class="text-xs uppercase tracking-[0.22em] text-white/55">Overview</p>
+                <h2 class="mt-3 text-2xl font-semibold text-white">Quick summary</h2>
+
+                <div class="mt-6 space-y-4">
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Job ID</p>
+                        <code
+                            class="mt-2 block break-all rounded-xl bg-white/10 px-3 py-3 text-sm text-white/90">{{ report.get('job_id', '-') }}</code>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">MIME Type</p>
+                        <p class="mt-2 text-base font-semibold text-white">{{ file_info.get('mime_type', '-') or '-' }}
+                        </p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">SHA-256</p>
+                        <code
+                            class="mt-2 block break-all rounded-xl bg-white/10 px-3 py-3 text-sm text-white/90">{{ report.get('sha256', '-') }}</code>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Assistant</p>
+                        <p class="mt-2 text-sm leading-6 text-white/72">
+                            Use the floating chat button to ask follow-up questions grounded only in this report.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-10 grid gap-6 lg:grid-cols-3">
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8 lg:col-span-2">
+                <p class="text-xs uppercase tracking-[0.22em] text-white/55">Why it scored this way</p>
+                <h2 class="mt-2 text-3xl font-semibold text-white">Risk reasons</h2>
+
+                {% if risk.get('reasons') %}
+                <div class="mt-6 space-y-3">
+                    {% for reason in risk.get('reasons', []) %}
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-sm leading-7 text-white/88">{{ reason }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="mt-6 glass-soft rounded-2xl p-4">
+                    <p class="text-sm text-white/72">No notable reasons were recorded.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                <p class="text-xs uppercase tracking-[0.22em] text-white/55">Correlation</p>
+                <h2 class="mt-2 text-3xl font-semibold text-white">Engine trace</h2>
+
+                <div class="mt-6 grid gap-4">
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Engine Version</p>
+                        <p class="mt-2 text-base font-semibold text-white">{{ correlation.get('engine_version', '-') }}
+                        </p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Base Score</p>
+                        <p class="mt-2 text-base font-semibold text-white">{{ correlation.get('base_score', 0) }}</p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Final Score</p>
+                        <p class="mt-2 text-base font-semibold text-white">{{ correlation.get('final_score',
+                            risk.get('score', 0)) }}</p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Fired Rules</p>
+                        <p class="mt-2 text-base font-semibold text-white">{{ fired_rules | length }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-10 glass glass-reflect rounded-3xl p-6 sm:p-8">
+            <p class="text-xs uppercase tracking-[0.22em] text-white/55">Correlation rules</p>
+            <h2 class="mt-2 text-3xl font-semibold text-white">Fired rule summary</h2>
+
+            {% if fired_rules %}
+            <div class="mt-6 overflow-hidden rounded-3xl border border-white/12 bg-white/6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-white/85">
+                        <thead class="bg-white/8 text-xs uppercase tracking-[0.18em] text-white/55">
+                            <tr>
+                                <th class="px-4 py-4 text-left">Rule</th>
+                                <th class="px-4 py-4 text-left">Category</th>
+                                <th class="px-4 py-4 text-left">Severity</th>
+                                <th class="px-4 py-4 text-left">Delta</th>
+                                <th class="px-4 py-4 text-left">Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10">
+                            {% for item in fired_rules %}
+                            <tr class="align-top">
+                                <td class="px-4 py-4">
+                                    <p class="font-semibold text-white">{{ item.get('title', '-') }}</p>
+                                    <code
+                                        class="mt-2 inline-block rounded-lg bg-white/10 px-2 py-1 text-xs text-white/80">{{ item.get('rule_id', '-') }}</code>
+                                </td>
+                                <td class="px-4 py-4">{{ item.get('category', '-') }}</td>
+                                <td class="px-4 py-4">{{ item.get('severity', '-') }}</td>
+                                <td class="px-4 py-4">{{ item.get('score_delta', 0) }}</td>
+                                <td class="px-4 py-4">{{ item.get('reason', '-') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-6 glass-soft rounded-2xl p-4">
+                <p class="text-xs uppercase tracking-[0.18em] text-white/50">Raw Fired Rule Details</p>
+                <pre
+                    class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ fired_rules | tojson(indent=2) }}</pre>
+            </div>
+            {% else %}
+            <div class="mt-6 glass-soft rounded-2xl p-4">
+                <p class="text-sm text-white/72">No conditional correlation rules fired for this artifact.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="mt-10 grid gap-6 lg:grid-cols-2">
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                <p class="text-xs uppercase tracking-[0.22em] text-white/55">Trust & Reputation</p>
+                <h2 class="mt-2 text-3xl font-semibold text-white">Trust decision</h2>
+
+                <div class="mt-6 grid gap-4">
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Decision State</p>
+                        <p class="mt-2 text-base font-semibold text-white">{{ trust_decision.get('state', '-') }}</p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Decision Reason</p>
+                        <p class="mt-2 text-sm leading-6 text-white/82">{{ trust_decision.get('reason', '-') }}</p>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Hash Lookup</p>
+                        <pre
+                            class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ hash_lookup | tojson(indent=2) }}</pre>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Reputation Summary</p>
+                        <pre
+                            class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ reputation_summary | tojson(indent=2) }}</pre>
+                    </div>
+
+                    <div class="glass-soft rounded-2xl p-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Signature Verification</p>
+                        <pre
+                            class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ signature_verification | tojson(indent=2) }}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                <p class="text-xs uppercase tracking-[0.22em] text-white/55">Provider Attempts</p>
+                <h2 class="mt-2 text-3xl font-semibold text-white">Reputation providers</h2>
+
+                {% if provider_attempts %}
+                <div class="mt-6 overflow-hidden rounded-3xl border border-white/12 bg-white/6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-white/85">
+                            <thead class="bg-white/8 text-xs uppercase tracking-[0.18em] text-white/55">
+                                <tr>
+                                    <th class="px-4 py-4 text-left">Provider</th>
+                                    <th class="px-4 py-4 text-left">Status</th>
+                                    <th class="px-4 py-4 text-left">Found</th>
+                                    <th class="px-4 py-4 text-left">Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/10">
+                                {% for item in provider_attempts %}
+                                <tr class="align-top">
+                                    <td class="px-4 py-4">{{ item.get('provider', '-') }}</td>
+                                    <td class="px-4 py-4">{{ item.get('status', '-') }}</td>
+                                    <td class="px-4 py-4">{{ item.get('found', '-') }}</td>
+                                    <td class="px-4 py-4">{{ item.get('reason', '-') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="mt-6 glass-soft rounded-2xl p-4">
+                    <p class="text-sm text-white/72">No provider attempts were recorded.</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="mt-10 glass glass-reflect rounded-3xl p-6 sm:p-8">
+            <p class="text-xs uppercase tracking-[0.22em] text-white/55">General detection</p>
+            <h2 class="mt-2 text-3xl font-semibold text-white">Common analysis</h2>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Magic Description</p>
+                    <p class="mt-2 text-sm leading-7 text-white/82">{{ common.get('magic', {}).get('description', '-')
+                        }}</p>
+                </div>
+
+                <div class="glass-soft rounded-2xl p-4">
+                    <div class="flex items-center justify-between gap-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">YARA Matches</p>
+                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/85">{{
+                            yara_matches | length }}</span>
+                    </div>
+
+                    {% if yara_matches %}
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="min-w-full text-sm text-white/85">
+                            <thead class="text-xs uppercase tracking-[0.18em] text-white/55">
+                                <tr>
+                                    <th class="px-2 py-3 text-left">Rule</th>
+                                    <th class="px-2 py-3 text-left">Namespace</th>
+                                    <th class="px-2 py-3 text-left">Tags</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/10">
+                                {% for match in yara_matches %}
+                                <tr class="align-top">
+                                    <td class="px-2 py-3">{{ match.get('rule') or match.get('error') or '-' }}</td>
+                                    <td class="px-2 py-3">{{ match.get('namespace', '-') }}</td>
+                                    <td class="px-2 py-3">{{ match.get('tags', []) | join(', ') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="mt-4 text-sm text-white/72">No YARA matches recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        {% if report.get('artifact_type') == 'pe' %}
+        <section class="mt-10 glass glass-reflect rounded-3xl p-6 sm:p-8">
+            <p class="text-xs uppercase tracking-[0.22em] text-white/55">Windows executable findings</p>
+            <h2 class="mt-2 text-3xl font-semibold text-white">PE analysis</h2>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_1fr]">
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Metadata</p>
+                    <div class="mt-4 grid gap-3">
+                        <div>
+                            <p class="text-xs text-white/50">Machine Type</p>
+                            <p class="mt-1 text-sm font-semibold text-white">{{ pe_meta.get('machine_type', '-') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white/50">Compile Time</p>
+                            <p class="mt-1 text-sm font-semibold text-white">{{ pe_meta.get('compile_time', '-') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white/50">Imphash</p>
+                            <p class="mt-1 text-sm font-semibold text-white break-all">{{ pe_meta.get('imphash', '-') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-soft rounded-2xl p-4">
+                    <div class="flex items-center justify-between gap-4">
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Sections</p>
+                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/85">{{
+                            pe_sections | length }}</span>
+                    </div>
+
+                    {% if pe_sections %}
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="min-w-full text-sm text-white/85">
+                            <thead class="text-xs uppercase tracking-[0.18em] text-white/55">
+                                <tr>
+                                    <th class="px-2 py-3 text-left">Section</th>
+                                    <th class="px-2 py-3 text-left">Entropy</th>
+                                    <th class="px-2 py-3 text-left">Raw</th>
+                                    <th class="px-2 py-3 text-left">Virtual</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/10">
+                                {% for section in pe_sections %}
+                                <tr class="align-top">
+                                    <td class="px-2 py-3">{{ section.get('name', '-') }}</td>
+                                    <td class="px-2 py-3">{{ section.get('entropy', '-') }}</td>
+                                    <td class="px-2 py-3">{{ section.get('raw_size', '-') }}</td>
+                                    <td class="px-2 py-3">{{ section.get('virtual_size', '-') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="mt-4 text-sm text-white/72">No section details were recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-2">
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Structural Evidence</p>
+                    <pre
+                        class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ pe_structural | tojson(indent=2) }}</pre>
+                </div>
+
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Full PE Tool Output</p>
+                    <pre
+                        class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ pe | tojson(indent=2) }}</pre>
+                </div>
+            </div>
+        </section>
+        {% elif report.get('artifact_type') == 'apk' %}
+        <section class="mt-10 glass glass-reflect rounded-3xl p-6 sm:p-8">
+            <p class="text-xs uppercase tracking-[0.22em] text-white/55">Android package findings</p>
+            <h2 class="mt-2 text-3xl font-semibold text-white">APK analysis</h2>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Metadata</p>
+                    <div class="mt-4 grid gap-3">
+                        <div>
+                            <p class="text-xs text-white/50">Package Name</p>
+                            <p class="mt-1 text-sm font-semibold text-white break-all">{{ apk_meta.get('package_name',
+                                '-') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white/50">Main Activity</p>
+                            <p class="mt-1 text-sm font-semibold text-white break-all">{{ apk_meta.get('main_activity',
+                                '-') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-white/50">Permissions Count</p>
+                            <p class="mt-1 text-sm font-semibold text-white">{{ apk_permissions | length }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Permissions</p>
+                    {% if apk_permissions %}
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        {% for perm in apk_permissions[:50] %}
+                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-white/85">{{ perm }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="mt-4 text-sm text-white/72">No permissions were recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-2">
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Structural Evidence</p>
+                    <pre
+                        class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ apk_structural | tojson(indent=2) }}</pre>
+                </div>
+
+                <div class="glass-soft rounded-2xl p-4">
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Full APK Tool Output</p>
+                    <pre
+                        class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ apk | tojson(indent=2) }}</pre>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </main>
+
+    <button id="chatFab" type="button" aria-label="Toggle report assistant"
+        class="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/12 text-2xl text-white shadow-glass backdrop-blur-xl transition duration-200 hover:scale-[1.04] hover:bg-white/18">
+        💬
+    </button>
+
+    <section id="chatPanel"
+        class="chat-panel fixed right-6 top-1/2 z-[60] flex h-[min(760px,calc(100vh-48px))] w-[min(440px,calc(100vw-32px))] flex-col overflow-hidden rounded-[28px] border border-white/18 bg-white/12 shadow-glass backdrop-blur-2xl"
+        aria-label="Report assistant">
+        <div class="border-b border-white/12 bg-white/8 px-5 py-4">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Report assistant</h3>
+                    <p class="mt-1 text-sm text-white/70">Ask follow-up questions about this report only.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="chatClear" type="button"
+                        class="rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white/85 transition hover:bg-white/15">
+                        Clear
+                    </button>
+                    <button id="chatClose" type="button" aria-label="Close chat"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-lg text-white/90 transition hover:bg-white/15">
+                        ×
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="chatMessages" class="chat-scrollbar flex-1 overflow-y-auto bg-white/6 px-4 py-4"></div>
+
+        <form id="chatForm" class="border-t border-white/12 bg-white/8 p-4">
+            <textarea id="chatInput"
+                class="min-h-[96px] w-full resize-y rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none transition focus:border-white/30 focus:bg-white/12"
+                placeholder="Example: Why did this sample get a medium risk score?" required></textarea>
+
+            <div class="mt-3 flex items-center justify-between gap-3">
+                <span class="text-xs text-white/60">Grounded to job <code>{{ report.get('job_id', '-') }}</code></span>
+                <button id="chatSend" type="submit"
+                    class="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200 disabled:cursor-not-allowed disabled:opacity-60">
+                    Send
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <footer class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
+        <div class="glass rounded-2xl px-6 py-4 text-center text-sm text-white/68">
+            SusScan Analyst · Report view
+        </div>
+    </footer>
+
+
+    <div id="confirmModal" class="confirm-modal" aria-hidden="true">
+        <div class="confirm-modal-backdrop" data-confirm-cancel></div>
+
+        <div class="confirm-modal-card">
+            <div class="px-6 py-5 border-b border-white/12 bg-white/8">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Confirmation</p>
+                        <h3 id="confirmModalTitle" class="mt-2 text-xl font-semibold text-white">Confirm action</h3>
+                    </div>
+
+                    <button id="confirmModalClose" type="button"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-lg text-white/90 transition hover:bg-white/15"
+                        aria-label="Close confirmation dialog">
+                        ×
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-6 py-5">
+                <p id="confirmModalMessage" class="text-sm leading-7 text-white/78">Are you sure you want to continue?
+                </p>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 px-6 pb-6">
+                <button id="confirmModalCancel" type="button"
+                    class="rounded-2xl border border-white/18 bg-white/8 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/12">
+                    Cancel
+                </button>
+
+                <button id="confirmModalConfirm" type="button"
+                    class="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script id="report-data" type="application/json">
+        {{ {"jobId": report.get("job_id", "-")} | tojson }}
+    </script>
+
+    <script>
+
+        function initConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            const modalTitle = document.getElementById('confirmModalTitle');
+            const modalMessage = document.getElementById('confirmModalMessage');
+            const modalConfirm = document.getElementById('confirmModalConfirm');
+            const modalCancel = document.getElementById('confirmModalCancel');
+            const modalClose = document.getElementById('confirmModalClose');
+            const backdropCancel = modal ? modal.querySelector('[data-confirm-cancel]') : null;
+
+            let resolver = null;
+
+            function closeConfirmModal(result = false) {
+                if (!modal) return;
+                modal.classList.remove('open');
+                modal.setAttribute('aria-hidden', 'true');
+
+                if (resolver) {
+                    resolver(result);
+                    resolver = null;
+                }
+            }
+
+            window.openConfirmModal = function ({
+                title = 'Confirm action',
+                message = 'Are you sure you want to continue?',
+                confirmText = 'Confirm',
+                danger = false,
+            } = {}) {
+                if (!modal) return Promise.resolve(false);
+
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modalConfirm.textContent = confirmText;
+
+                if (danger) {
+                    modalConfirm.classList.add('confirm-danger');
+                    modalConfirm.classList.remove('bg-white', 'text-slatex-900', 'hover:bg-slatex-200');
+                } else {
+                    modalConfirm.classList.remove('confirm-danger');
+                    modalConfirm.classList.add('bg-white', 'text-slatex-900', 'hover:bg-slatex-200');
+                }
+
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+
+                return new Promise((resolve) => {
+                    resolver = resolve;
+                });
+            };
+
+            if (modalConfirm) modalConfirm.addEventListener('click', () => closeConfirmModal(true));
+            if (modalCancel) modalCancel.addEventListener('click', () => closeConfirmModal(false));
+            if (modalClose) modalClose.addEventListener('click', () => closeConfirmModal(false));
+            if (backdropCancel) backdropCancel.addEventListener('click', () => closeConfirmModal(false));
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && modal && modal.classList.contains('open')) {
+                    closeConfirmModal(false);
+                }
+            });
+        }
+
+        initConfirmModal();
+
+        (() => {
+            const reportDataEl = document.getElementById('report-data');
+            const { jobId } = JSON.parse(reportDataEl.textContent);
+            const chatFab = document.getElementById('chatFab');
+            const chatPanel = document.getElementById('chatPanel');
+            const chatClose = document.getElementById('chatClose');
+            const chatClear = document.getElementById('chatClear');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatForm = document.getElementById('chatForm');
+            const chatInput = document.getElementById('chatInput');
+            const chatSend = document.getElementById('chatSend');
+
+            let historyLoaded = false;
+
+            function scrollToBottom() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function setFabOpenState(isOpen) {
+                chatFab.textContent = isOpen ? '×' : '💬';
+                chatFab.classList.toggle('chat-fab-open', isOpen);
+                chatFab.setAttribute('aria-label', isOpen ? 'Close report assistant' : 'Open report assistant');
+            }
+
+            function openChatPanel() {
+                chatPanel.classList.add('open');
+                setFabOpenState(true);
+            }
+
+            function closeChatPanel() {
+                chatPanel.classList.remove('open');
+                setFabOpenState(false);
+            }
+
+            async function toggleChatPanel() {
+                const isOpen = chatPanel.classList.contains('open');
+
+                if (isOpen) {
+                    closeChatPanel();
+                    return;
+                }
+
+                openChatPanel();
+
+                try {
+                    await loadHistory(false);
+                } catch (error) {
+                    renderInitialSystemMessage();
+                    addMessage('system', `Error: ${error.message}`);
+                }
+
+                chatInput.focus();
+                scrollToBottom();
+            }
+
+            function createMessage(role, content) {
+                const row = document.createElement('div');
+                row.className = 'mb-3 flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
+
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-message max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-6';
+
+                if (role === 'user') {
+                    bubble.className += ' rounded-br-md bg-white text-slatex-900';
+                } else if (role === 'assistant') {
+                    bubble.className += ' rounded-bl-md border border-white/12 bg-white/12 text-white';
+                } else {
+                    bubble.className += ' max-w-full border border-white/10 bg-white/8 text-white/78';
+                    row.className = 'mb-3 flex justify-start';
+                }
+
+                bubble.textContent = content;
+                row.appendChild(bubble);
+                return row;
+            }
+
+            function addMessage(role, content) {
+                chatMessages.appendChild(createMessage(role, content));
+                scrollToBottom();
+            }
+
+            function renderInitialSystemMessage() {
+                chatMessages.innerHTML = '';
+                addMessage(
+                    'system',
+                    'This assistant is grounded only in the current SusScan report. It explains the findings and does not change the verdict.'
+                );
+            }
+
+            function renderHistory(items) {
+                renderInitialSystemMessage();
+                for (const item of items) {
+                    addMessage(item.role, item.content);
+                }
+            }
+
+            function setBusy(isBusy) {
+                chatSend.disabled = isBusy;
+                chatInput.disabled = isBusy;
+                chatClear.disabled = isBusy;
+                chatSend.textContent = isBusy ? 'Sending...' : 'Send';
+            }
+
+            async function loadHistory(force = false) {
+                if (historyLoaded && !force) return;
+
+                const response = await fetch(`/report/${encodeURIComponent(jobId)}/chat/history`);
+                const payload = await response.json();
+
+                if (!response.ok) {
+                    const detail = payload && payload.detail ? payload.detail : 'Failed to load chat history.';
+                    throw new Error(detail);
+                }
+
+                renderHistory(payload.items || []);
+                historyLoaded = true;
+            }
+
+            chatFab.addEventListener('click', async () => {
+                await toggleChatPanel();
+            });
+
+            chatClose.addEventListener('click', () => {
+                closeChatPanel();
+            });
+
+            chatClear.addEventListener('click', async () => {
+                const ok = await window.openConfirmModal({
+                    title: 'Clear chat history',
+                    message: 'Clear saved chat history for this report?',
+                    confirmText: 'Clear',
+                    danger: true,
+                });
+
+                if (!ok) return;
+
+                try {
+                    setBusy(true);
+
+                    const response = await fetch(`/report/${encodeURIComponent(jobId)}/chat/history`, {
+                        method: 'DELETE',
+                    });
+
+                    const payload = await response.json();
+
+                    if (!response.ok) {
+                        const detail = payload && payload.detail ? payload.detail : 'Failed to clear chat history.';
+                        throw new Error(detail);
+                    }
+
+                    renderInitialSystemMessage();
+                    historyLoaded = true;
+                    chatInput.focus();
+                } catch (error) {
+                    addMessage('system', `Error: ${error.message}`);
+                } finally {
+                    setBusy(false);
+                }
+            });
+
+            chatInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    if (!chatSend.disabled) {
+                        chatForm.requestSubmit();
+                    }
+                }
+            });
+
+            chatForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                addMessage('user', message);
+                chatInput.value = '';
+                setBusy(true);
+
+                try {
+                    const response = await fetch(`/report/${encodeURIComponent(jobId)}/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message }),
+                    });
+
+                    const payload = await response.json();
+
+                    if (!response.ok) {
+                        const detail = payload && payload.detail ? payload.detail : 'Chat request failed.';
+                        throw new Error(detail);
+                    }
+
+                    addMessage('assistant', payload.answer || 'The assistant returned an empty message.');
+                    historyLoaded = false;
+                } catch (error) {
+                    addMessage('system', `Error: ${error.message}`);
+                } finally {
+                    setBusy(false);
+                    chatInput.focus();
+                }
+            });
+
+            renderInitialSystemMessage();
+            setFabOpenState(false);
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,635 @@
+{
+  "yara-rules": {
+    "accepted": 488,
+    "skipped_duplicate_content": 0,
+    "skipped_index_or_excluded": 78
+  },
+  "signature-base": {
+    "accepted": 730,
+    "skipped_duplicate_content": 2,
+    "skipped_known_bad": 9
+  },
+  "valhalla": {
+    "accepted": 2721,
+    "skipped_duplicate_content": 0,
+    "skipped_duplicate_name": 0
+  },
+  "validation": {
+    "accepted": 3786,
+    "rejected": 153,
+    "rejected_files": [
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/index_w_mobile.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/./malware/MALW_AZORULT.yar(23): invalid field name \"sync\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_AZORULT.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_AZORULT.yar(23): invalid field name \"sync\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Httpsd_ELF.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Httpsd_ELF.yar(73): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Mirai_Okiru_ELF.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Mirai_Okiru_ELF.yar(21): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Mirai_Satori_ELF.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Mirai_Satori_ELF.yar(34): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Rebirth_Vulcan_ELF.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Rebirth_Vulcan_ELF.yar(72): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_TinyShell_Backdoor_gen.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_TinyShell_Backdoor_gen.yar(126): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Torte_ELF.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/MALW_Torte_ELF.yar(31): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/yara-rules/malware/TOOLKIT_Mandibule.yar",
+        "error": "/opt/staticlab/rules/filtered/yara-rules/malware/TOOLKIT_Mandibule.yar(65): undefined identifier \"is__elf\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/signature-base/expl_connectwise_screenconnect_vuln_feb24.yar",
+        "error": "/opt/staticlab/rules/filtered/signature-base/expl_connectwise_screenconnect_vuln_feb24.yar(327): undefined identifier \"filepath\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/signature-base/gen_mal_3cx_compromise_mar23.yar",
+        "error": "/opt/staticlab/rules/filtered/signature-base/gen_mal_3cx_compromise_mar23.yar(367): undefined identifier \"extension\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/signature-base/gen_susp_obfuscation.yar",
+        "error": "/opt/staticlab/rules/filtered/signature-base/gen_susp_obfuscation.yar(57): undefined identifier \"filepath\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/signature-base/gen_vcruntime140_dll_sideloading.yar",
+        "error": "/opt/staticlab/rules/filtered/signature-base/gen_vcruntime140_dll_sideloading.yar(12): undefined identifier \"filename\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT12_Malware_Aug17_RID2D65.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT12_Malware_Aug17_RID2D65.yar(17): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT15_Malware_Mar18_RoyalDNS_RID30B7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT15_Malware_Mar18_RoyalDNS_RID30B7.yar(26): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT17_Malware_Oct17_2_RID2E04.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT17_Malware_Oct17_2_RID2E04.yar(29): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT17_Malware_Oct17_Gen_RID2EEC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT17_Malware_Oct17_Gen_RID2EEC.yar(30): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT17_Unsigned_Symantec_Binary_EFA_RID338C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT17_Unsigned_Symantec_Binary_EFA_RID338C.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_APT29_NOBELIUM_BoomBox_PDF_Masq_May21_1_RID3517.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_APT29_NOBELIUM_BoomBox_PDF_Masq_May21_1_RID3517.yar(22): undefined identifier \"math\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_HIGHNOON_2_RID2CE9.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_HIGHNOON_2_RID2CE9.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_HIGHNOON_BIN_RID2D90.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_HIGHNOON_BIN_RID2D90.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_POISONPLUG_RID2D0E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_POISONPLUG_RID2D0E.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_POISONPLUG_SHADOW_RID2F33.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_APT41_POISONPLUG_SHADOW_RID2F33.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_ATP28_Sofacy_Indicators_May19_1_RID3357.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_ATP28_Sofacy_Indicators_May19_1_RID3357.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_DarkHydrus_Jul18_1_RID2ED9.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_DarkHydrus_Jul18_1_RID2ED9.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_DarkHydrus_Jul18_3_RID2EDB.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_DarkHydrus_Jul18_3_RID2EDB.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_FIN7_EXE_Sample_Aug18_6_RID2FE5.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_FIN7_EXE_Sample_Aug18_6_RID2FE5.yar(25): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_GreyEnergy_Malware_Oct18_1_RID31FC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_GreyEnergy_Malware_Oct18_1_RID31FC.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_GreyEnergy_Malware_Oct18_4_RID31FF.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_GreyEnergy_Malware_Oct18_4_RID31FF.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Lazarus_Aug18_1_RID2DAC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Lazarus_Aug18_1_RID2DAC.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_MAL_REvil_Kaseya_Jul21_1_RID30AA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_MAL_REvil_Kaseya_Jul21_1_RID30AA.yar(26): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_ME_BigBang_Gen_Jul18_1_RID2FCC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_ME_BigBang_Gen_Jul18_1_RID2FCC.yar(28): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_RANCOR_DDKONG_Malware_Exports_RID32AC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_RANCOR_DDKONG_Malware_Exports_RID32AC.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_RANCOR_PLAINTEE_Malware_Exports_RID3347.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_RANCOR_PLAINTEE_Malware_Exports_RID3347.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_11_RID2FD3.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_11_RID2FD3.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_13_RID2FD5.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_13_RID2FD5.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_14_RID2FD6.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_14_RID2FD6.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_16_RID2FD8.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_16_RID2FD8.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_9_RID2FAA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Thrip_Sample_Jun18_9_RID2FAA.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/APT_Turla_Agent_BTZ_Gen_1_RID3003.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/APT_Turla_Agent_BTZ_Gen_1_RID3003.yar(31): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Agent_BTZ_Aug17_RID2C33.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Agent_BTZ_Aug17_RID2C33.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Agent_BTZ_Proxy_DLL_1_RID2E9B.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Agent_BTZ_Proxy_DLL_1_RID2E9B.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/BKDR_Snarasite_Oct17_RID2E2A.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/BKDR_Snarasite_Oct17_RID2E2A.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/BronzeButler_Daserf_C_1_RID2FD5.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/BronzeButler_Daserf_C_1_RID2FD5.yar(34): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/CMStar_Malware_Sep17_RID2E52.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/CMStar_Malware_Sep17_RID2E52.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/CN_disclosed_20180208_Mal1_RID2F59.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/CN_disclosed_20180208_Mal1_RID2F59.yar(26): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/CN_disclosed_20180208_Mal4_RID2F5C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/CN_disclosed_20180208_Mal4_RID2F5C.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/CobaltStrike_ReflectiveLoader_RID3297.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/CobaltStrike_ReflectiveLoader_RID3297.yar(25): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Datper_Backdoor_RID2CF5.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Datper_Backdoor_RID2CF5.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/DragonFly_APT_Sep17_3_RID2E5C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/DragonFly_APT_Sep17_3_RID2E5C.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Elise_Jan18_1_RID2B74.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Elise_Jan18_1_RID2B74.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Foudre_Backdoor_Component_1_RID319C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Foudre_Backdoor_Component_1_RID319C.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/FreeMilk_APT_Mal_1_RID2D6D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/FreeMilk_APT_Mal_1_RID2D6D.yar(26): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/FreeMilk_APT_Mal_2_RID2D6E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/FreeMilk_APT_Mal_2_RID2D6E.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/FreeMilk_APT_Mal_4_RID2D70.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/FreeMilk_APT_Mal_4_RID2D70.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Freeenki_Infostealer_Nov17_Export_Sig_Testing_RID38AF.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Freeenki_Infostealer_Nov17_Export_Sig_Testing_RID38AF.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/GoldDragon_Ghost419_RAT_RID2F3A.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/GoldDragon_Ghost419_RAT_RID2F3A.yar(35): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/GoldDragon_RunningRAT_RID2F19.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/GoldDragon_RunningRAT_RID2F19.yar(38): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/GoldDragon_malware_Feb18_1_RID309F.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/GoldDragon_malware_Feb18_1_RID309F.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Greenbug_Malware_Nov17_1_RID2FF2.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Greenbug_Malware_Nov17_1_RID2FF2.yar(27): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/HKTL_CN_ProcHook_May19_1_RID2F38.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/HKTL_CN_ProcHook_May19_1_RID2F38.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/HKTL_Unlicensed_CobaltStrike_EICAR_Jul18_5_RID361D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/HKTL_Unlicensed_CobaltStrike_EICAR_Jul18_5_RID361D.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/HiddenCobra_FallChill_1_RID2F9E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/HiddenCobra_FallChill_1_RID2F9E.yar(26): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/HiddenCobra_FallChill_2_RID2F9F.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/HiddenCobra_FallChill_2_RID2F9F.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Imphash_Malware_2_TA17_293A_RID302E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Imphash_Malware_2_TA17_293A_RID302E.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Imphash_UPX_Packed_Malware_1_TA17_293A_RID3430.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Imphash_UPX_Packed_Malware_1_TA17_293A_RID3430.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/KHRAT_Malware_RID2BB3.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/KHRAT_Malware_RID2BB3.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/KasperMalware_Oct17_1_RID2EBD.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/KasperMalware_Oct17_1_RID2EBD.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/KeyBoy_rasauto_RID2CC2.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/KeyBoy_rasauto_RID2CC2.yar(29): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_12_RID31D6.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_12_RID31D6.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_13_RID31D7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_13_RID31D7.yar(17): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_15_RID31D9.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_15_RID31D9.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_18_RID31DC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_18_RID31DC.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_1_RID31A4.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_1_RID31A4.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_20_RID31D5.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_20_RID31D5.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_4_RID31A7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_4_RID31A7.yar(31): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_7_RID31AA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_BurningUmbrella_Sample_7_RID31AA.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_CN_FlyStudio_May18_1_RID2F5C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_CN_FlyStudio_May18_1_RID2F5C.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_CRIME_CobaltGang_Malware_Oct19_1_RID3392.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_CRIME_CobaltGang_Malware_Oct19_1_RID3392.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_CS_Loader_Feb24_1_RID2DF8.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_CS_Loader_Feb24_1_RID2DF8.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_CrypRAT_Jan19_1_RID2D41.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_CrypRAT_Jan19_1_RID2D41.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Emotet_Jan20_1_RID2D22.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Emotet_Jan20_1_RID2D22.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_ExileRAT_Feb19_1_RID2D8E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_ExileRAT_Feb19_1_RID2D8E.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Floxif_Generic_RID2DCE.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Floxif_Generic_RID2DCE.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_GandCrab_Apr18_1_RID2DB7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_GandCrab_Apr18_1_RID2DB7.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Hogfish_Report_Related_Sample_RID33CE.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Hogfish_Report_Related_Sample_RID33CE.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Neshta_Generic_RID2DC9.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Neshta_Generic_RID2DC9.yar(29): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Parite_Malware_May19_2_RID3058.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Parite_Malware_May19_2_RID3058.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_RANSOM_LockBit_Indicators_Feb24_RID3362.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_RANSOM_LockBit_Indicators_Feb24_RID3362.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_RANSOM_Venus_Nov22_1_RID2F10.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_RANSOM_Venus_Nov22_1_RID2F10.yar(27): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Ramnit_May19_1_RID2D35.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Ramnit_May19_1_RID2D35.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Ransomware_Wadhrama_RID2FED.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Ransomware_Wadhrama_RID2FED.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_RedLeaves_Apr18_1_RID2E40.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_RedLeaves_Apr18_1_RID2E40.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Ryuk_Ransomware_RID2E73.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Ryuk_Ransomware_RID2E73.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Trickbot_Malware_Oct19_3_RID3135.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Trickbot_Malware_Oct19_3_RID3135.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_Visel_Sample_May18_1_RID2F8D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_Visel_Sample_May18_1_RID2F8D.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_WIPER_IsaacWiper_Mar22_1_RID308B.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_WIPER_IsaacWiper_Mar22_1_RID308B.yar(25): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/MAL_XMR_Miner_May19_1_RID2E1B.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/MAL_XMR_Miner_May19_1_RID2E1B.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ME_Campaign_Malware_1_RID2EDA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ME_Campaign_Malware_1_RID2EDA.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ME_Campaign_Malware_2_RID2EDB.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ME_Campaign_Malware_2_RID2EDB.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ME_Campaign_Malware_4_RID2EDD.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ME_Campaign_Malware_4_RID2EDD.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Microcin_Sample_1_RID2D96.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Microcin_Sample_1_RID2D96.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Monsoon_APT_Malware_1_RID2EF6.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Monsoon_APT_Malware_1_RID2EF6.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/OilRig_Malware_Nov17_13_RID2F3C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/OilRig_Malware_Nov17_13_RID2F3C.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/OilRig_RGDoor_Gen1_RID2D8D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/OilRig_RGDoor_Gen1_RID2D8D.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/OlympicDestroyer_Gen2_RID2F5A.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/OlympicDestroyer_Gen2_RID2F5A.yar(27): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/OpHoneybee_Malware_1_RID2EB7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/OpHoneybee_Malware_1_RID2EB7.yar(33): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/PUA_AnyDesk_Compromised_Certificate_Revoked_Feb24_RID39A9.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/PUA_AnyDesk_Compromised_Certificate_Revoked_Feb24_RID39A9.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/PasswordPro_NTLM_DLL_RID2E6A.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/PasswordPro_NTLM_DLL_RID2E6A.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ProcessInjector_Gen_RID2EA7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ProcessInjector_Gen_RID2EA7.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Pupy_Backdoor_RID2C43.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Pupy_Backdoor_RID2C43.yar(29): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ROKRAT_Dropper_Nov17_RID2E19.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ROKRAT_Dropper_Nov17_RID2E19.yar(17): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Reaver3_Malware_Nov17_1_RID2F5B.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Reaver3_Malware_Nov17_1_RID2F5B.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Reaver3_Malware_Nov17_2_RID2F5C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Reaver3_Malware_Nov17_2_RID2F5C.yar(25): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Reaver3_Malware_Nov17_3_RID2F5D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Reaver3_Malware_Nov17_3_RID2F5D.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Reflective_DLL_Loader_Aug17_2_RID3180.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Reflective_DLL_Loader_Aug17_2_RID3180.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Reflective_DLL_Loader_Aug17_3_RID3181.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Reflective_DLL_Loader_Aug17_3_RID3181.yar(23): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Rehashed_RAT_2_RID2C0C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Rehashed_RAT_2_RID2C0C.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_3CX_App_Signed_Binary_Mar23_1_RID32FA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_3CX_App_Signed_Binary_Mar23_1_RID32FA.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_AdobePDF_Bitmap_Executable_RID328D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_AdobePDF_Bitmap_Executable_RID328D.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_AdobePDF_SFX_Bitmap_Combo_Executable_RID362C.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_AdobePDF_SFX_Bitmap_Combo_Executable_RID362C.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_Fake_AMSI_DLL_Jun23_1_RID2F77.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_Fake_AMSI_DLL_Jun23_1_RID2F77.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_HxD_Icon_Anomaly_May23_1_RID3152.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_HxD_Icon_Anomaly_May23_1_RID3152.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_Imphash_PassRevealer_PY_EXE_RID32FA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_Imphash_PassRevealer_PY_EXE_RID32FA.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_THOR_Unsigned_Oct23_1_RID300E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_THOR_Unsigned_Oct23_1_RID300E.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_TH_APT_UNC4736_TradingTech_Cert_Apr23_1_RID35C4.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_TH_APT_UNC4736_TradingTech_Cert_Apr23_1_RID35C4.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_Unsigned_GoogleUpdate_RID3117.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_Unsigned_GoogleUpdate_RID3117.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/SUSP_Unsigned_OSPPSVC_RID2E85.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/SUSP_Unsigned_OSPPSVC_RID2E85.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ShadowPad_nssock2_RID2DAE.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ShadowPad_nssock2_RID2DAE.yar(18): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Silence_malware_1_RID2DAC.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Silence_malware_1_RID2DAC.yar(25): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Slingshot_APT_Malware_1_RID2FC8.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Slingshot_APT_Malware_1_RID2FC8.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Slingshot_APT_Malware_3_RID2FCA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Slingshot_APT_Malware_3_RID2FCA.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Campaign_Mal_Feb18_cdnver_RID3324.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Campaign_Mal_Feb18_cdnver_RID3324.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Oct17_1_RID2BF3.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Oct17_1_RID2BF3.yar(30): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Oct17_2_RID2BF4.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Oct17_2_RID2BF4.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Trojan_Loader_Feb18_1_RID315E.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Sofacy_Trojan_Loader_Feb18_1_RID315E.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Suckfly_Nidiran_Gen_3_RID2F21.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Suckfly_Nidiran_Gen_3_RID2F21.yar(27): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TSCookie_RAT_RID2B58.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TSCookie_RAT_RID2B58.yar(21): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TopHat_Malware_Jan18_2_RID2EFB.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TopHat_Malware_Jan18_2_RID2EFB.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_1_RID2E83.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_1_RID2E83.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_2_RID2E84.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_2_RID2E84.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_3_RID2E85.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_3_RID2E85.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_4_RID2E86.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_4_RID2E86.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_5_RID2E87.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/TurlaMosquito_Mal_5_RID2E87.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Turla_KazuarRAT_RID2CCD.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Turla_KazuarRAT_RID2CCD.yar(22): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Unspecified_Malware_Sep1_A1_RID3131.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Unspecified_Malware_Sep1_A1_RID3131.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/VULN_PrinterDriver_PrivEsc_CVE_2021_3438_Jul21_RID369F.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/VULN_PrinterDriver_PrivEsc_CVE_2021_3438_Jul21_RID369F.yar(19): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/WINNTI_KingSoft_Moz_Confustion_RID328A.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/WINNTI_KingSoft_Moz_Confustion_RID328A.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/WiltedTulip_matryoshka_Injector_RID33C7.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/WiltedTulip_matryoshka_Injector_RID33C7.yar(20): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Winexe_RemoteExec_RID2DD1.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Winexe_RemoteExec_RID2DD1.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Xtreme_RAT_Gen_Imp_RID2DCA.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Xtreme_RAT_Gen_Imp_RID2DCA.yar(16): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/Xtreme_Sep17_1_RID2C05.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/Xtreme_Sep17_1_RID2C05.yar(24): undefined identifier \"pe\""
+      },
+      {
+        "file": "/opt/staticlab/rules/filtered/valhalla/ZXshell_20171211_chrsben_RID2F0D.yar",
+        "error": "/opt/staticlab/rules/filtered/valhalla/ZXshell_20171211_chrsben_RID2F0D.yar(22): undefined identifier \"pe\""
+      }
+    ]
+  }
+}
