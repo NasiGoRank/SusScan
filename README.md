@@ -344,53 +344,6 @@ Change the configured port in the systemd service if another process is already 
 
 ---
 
-## Git Ignore Reminder
-
-Recommended entries include:
-
-```gitignore
-__pycache__/
-*.py[cod]
-*.pyd
-
-.venv/
-venv/
-env/
-
-.env
-.env.*
-!.env.example
-
-*.log
-*.db
-*.sqlite
-*.sqlite3
-
-data/uploads/
-data/jobs/
-data/reports/
-data/decompiled/
-
-tools/
-
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-.pytest_cache/
-.mypy_cache/
-build/
-dist/
-*.egg-info/
-*.zip
-*.tar
-*.gz
-*.tmp
-*.bak
-```
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
