@@ -109,7 +109,7 @@ cd SusScan
 ### 2. Run the installer
 
 ```bash
-sudo bash install.sh.sh
+sudo bash install.sh
 ```
 
 What the installer does:
@@ -254,7 +254,7 @@ sudo /opt/SusScan/rule.sh
 To skip automatic execution during install:
 
 ```bash
-sudo SKIP_RULE_SETUP=1 bash install.sh.sh
+sudo SKIP_RULE_SETUP=1 bash install.sh
 ```
 
 ---
@@ -283,7 +283,7 @@ If you update the repo and want to redeploy:
 ```bash
 cd SusScan
 git pull
-sudo bash install.sh.sh
+sudo bash install.sh
 ```
 
 Then restart the service:
