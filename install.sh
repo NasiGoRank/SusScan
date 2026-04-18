@@ -165,36 +165,45 @@ import sys
 path = Path(sys.argv[1])
 key = sys.argv[2]
 value = sys.argv[3]
+
+# Normalize accidental pasted CR/LF
+value = value.replace("\r", "").replace("\n", "")
+
 lines = path.read_text().splitlines() if path.exists() else []
 needle = f"{key}="
 replaced = False
 new_lines = []
+
 for line in lines:
     if line.startswith(needle):
         new_lines.append(f"{key}={value}")
         replaced = True
     else:
         new_lines.append(line)
+
 if not replaced:
     new_lines.append(f"{key}={value}")
+
 path.write_text("\n".join(new_lines).rstrip() + "\n")
 PY
 }
 
 prompt_secret() {
   local label="$1"
-  local current="$2"
+  local current="${2:-}"
   local value=""
+
   if [[ -n "$current" ]]; then
     read -r -s -p "${label} [press Enter to keep current]: " value
-    echo
+    printf '\n' >&2
     if [[ -z "$value" ]]; then
       value="$current"
     fi
   else
     read -r -s -p "${label}: " value
-    echo
+    printf '\n' >&2
   fi
+
   printf '%s' "$value"
 }
 
@@ -390,43 +399,43 @@ fi
 EOF2
   chmod +x "${APP_ROOT}/activate.sh"
 
-  cat > "${BIN_DIR}/validate_env.sh" <<'EOF2'
+cat > "${BIN_DIR}/validate_env.sh" <<'EOF2'
 #!/usr/bin/env bash
 set -Eeuo pipefail
-ENV_FILE="/opt/SusScan/.env"
 
-if [[ ! -f "${ENV_FILE}" ]]; then
-  echo "Missing /opt/SusScan/.env. Copy .env.example first." >&2
-  exit 1
-fi
+exec /opt/SusScan/venv/bin/python - <<'PY'
+from pathlib import Path
+from dotenv import dotenv_values
+import sys
 
-set -a
-source "${ENV_FILE}"
-set +a
+env_file = Path("/opt/SusScan/.env")
 
-if [[ -z "${SUSSCAN_GROQ_API_KEY:-}" ]]; then
-  echo "SUSSCAN_GROQ_API_KEY is required before SusScan may start." >&2
-  exit 1
-fi
+if not env_file.exists():
+    print("Missing /opt/SusScan/.env. Copy .env.example first.", file=sys.stderr)
+    raise SystemExit(1)
 
-hash_provider_count=0
-for key_name in \
-  SUSSCAN_MALWAREBAZAAR_API_KEY \
-  SUSSCAN_HYBRID_ANALYSIS_API_KEY \
-  SUSSCAN_METADEFENDER_API_KEY \
-  SUSSCAN_VIRUSTOTAL_API_KEY
-  do
-    if [[ -n "${!key_name:-}" ]]; then
-      hash_provider_count=$((hash_provider_count + 1))
-    fi
-  done
+values = {
+    key: (value.strip() if value is not None else "")
+    for key, value in dotenv_values(env_file).items()
+}
 
-if (( hash_provider_count < 1 )); then
-  echo "At least one hash/reputation API key is required before SusScan may start." >&2
-  exit 1
-fi
+if not values.get("SUSSCAN_GROQ_API_KEY"):
+    print("SUSSCAN_GROQ_API_KEY is required before SusScan may start.", file=sys.stderr)
+    raise SystemExit(1)
+
+provider_keys = [
+    "SUSSCAN_MALWAREBAZAAR_API_KEY",
+    "SUSSCAN_HYBRID_ANALYSIS_API_KEY",
+    "SUSSCAN_METADEFENDER_API_KEY",
+    "SUSSCAN_VIRUSTOTAL_API_KEY",
+]
+
+if not any(values.get(k) for k in provider_keys):
+    print("At least one hash/reputation API key is required before SusScan may start.", file=sys.stderr)
+    raise SystemExit(1)
+PY
 EOF2
-  chmod +x "${BIN_DIR}/validate_env.sh"
+chmod +x "${BIN_DIR}/validate_env.sh"
 
   cat > "${BIN_DIR}/configure_env.sh" <<'EOF2'
 #!/usr/bin/env bash
