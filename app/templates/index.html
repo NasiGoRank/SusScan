@@ -2,669 +2,795 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ title or "SusScan" }}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title or "SusScan" }}</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            slatex: {
-              900: '#152f63',
-              700: '#2b5a9d',
-              500: '#548bc2',
-              200: '#b1d7e5',
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slatex: {
+                            900: '#152f63',
+                            700: '#2b5a9d',
+                            500: '#548bc2',
+                            200: '#b1d7e5',
+                        }
+                    },
+                    boxShadow: {
+                        glass: '0 12px 40px rgba(10, 22, 48, 0.22)',
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
             }
-          },
-          boxShadow: {
-            glass: '0 12px 40px rgba(10, 22, 48, 0.22)',
-          },
-          backdropBlur: {
-            xs: '2px',
-          }
         }
-      }
-    }
-  </script>
+    </script>
 
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
 
-    body {
-      background:
-        radial-gradient(circle at top left, rgba(84, 139, 194, 0.28), transparent 28%),
-        radial-gradient(circle at top right, rgba(177, 215, 229, 0.24), transparent 24%),
-        linear-gradient(180deg, #0d1c3d 0%, #17386f 38%, #25589b 68%, #b1d7e5 100%);
-      min-height: 100vh;
-    }
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(84, 139, 194, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(43, 90, 157, 0.14), transparent 24%),
+                linear-gradient(180deg, #0b1733 0%, #10264f 38%, #17386f 68%, #1e4478 100%);
+            min-height: 100vh;
+        }
 
-    .glass {
-      background: rgba(255, 255, 255, 0.10);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 12px 40px rgba(10, 22, 48, 0.20);
-    }
+        .glass {
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 12px 40px rgba(10, 22, 48, 0.20);
+        }
 
-    .glass-soft {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 10px 28px rgba(10, 22, 48, 0.14);
-    }
+        .glass-soft {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 10px 28px rgba(10, 22, 48, 0.14);
+        }
 
-    .glass-reflect {
-      position: relative;
-      overflow: hidden;
-    }
+        .glass-reflect {
+            position: relative;
+            overflow: hidden;
+        }
 
-    .glass-reflect::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg,
-          rgba(255, 255, 255, 0.22) 0%,
-          rgba(255, 255, 255, 0.07) 18%,
-          rgba(255, 255, 255, 0.01) 42%,
-          rgba(255, 255, 255, 0.10) 70%,
-          rgba(255, 255, 255, 0.22) 100%);
-      opacity: 0.45;
-      pointer-events: none;
-    }
+        .glass-reflect::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg,
+                    rgba(255, 255, 255, 0.22) 0%,
+                    rgba(255, 255, 255, 0.07) 18%,
+                    rgba(255, 255, 255, 0.01) 42%,
+                    rgba(255, 255, 255, 0.10) 70%,
+                    rgba(255, 255, 255, 0.22) 100%);
+            opacity: 0.45;
+            pointer-events: none;
+        }
 
-    .section-anchor {
-      scroll-margin-top: 110px;
-    }
+        .section-anchor {
+            scroll-margin-top: 110px;
+        }
 
-    .grid-fade {
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-      background-size: 24px 24px;
-      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15));
-      -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15));
-    }
+        .grid-fade {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15));
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15));
+        }
 
 
-    .confirm-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 120;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 180ms ease;
-    }
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease;
+        }
 
-    .confirm-modal.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
+        .confirm-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-    .confirm-modal-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(8, 15, 35, 0.46);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+        .confirm-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(8, 15, 35, 0.46);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
 
-    .confirm-modal-card {
-      position: relative;
-      width: min(100%, 30rem);
-      border-radius: 1.75rem;
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      box-shadow: 0 18px 50px rgba(10, 22, 48, 0.28);
-      overflow: hidden;
-      transform: scale(0.92) translateY(10px);
-      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
+        .confirm-modal-card {
+            position: relative;
+            width: min(100%, 30rem);
+            border-radius: 1.75rem;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            box-shadow: 0 18px 50px rgba(10, 22, 48, 0.28);
+            overflow: hidden;
+            transform: scale(0.92) translateY(10px);
+            transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
 
-    .confirm-modal.open .confirm-modal-card {
-      transform: scale(1) translateY(0);
-    }
+        .confirm-modal.open .confirm-modal-card {
+            transform: scale(1) translateY(0);
+        }
 
-    .confirm-modal-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(120deg,
-          rgba(255, 255, 255, 0.20) 0%,
-          rgba(255, 255, 255, 0.06) 18%,
-          rgba(255, 255, 255, 0.01) 42%,
-          rgba(255, 255, 255, 0.10) 70%,
-          rgba(255, 255, 255, 0.20) 100%);
-      opacity: 0.42;
-      pointer-events: none;
-    }
+        .confirm-modal-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg,
+                    rgba(255, 255, 255, 0.20) 0%,
+                    rgba(255, 255, 255, 0.06) 18%,
+                    rgba(255, 255, 255, 0.01) 42%,
+                    rgba(255, 255, 255, 0.10) 70%,
+                    rgba(255, 255, 255, 0.20) 100%);
+            opacity: 0.42;
+            pointer-events: none;
+        }
 
-    .confirm-danger {
-      background: rgba(244, 63, 94, 0.16);
-      border: 1px solid rgba(251, 113, 133, 0.24);
-      color: #ffe4e6;
-    }
-  </style>
+        .confirm-danger {
+            background: rgba(244, 63, 94, 0.16);
+            border: 1px solid rgba(251, 113, 133, 0.24);
+            color: #ffe4e6;
+        }
+    </style>
 </head>
 
 <body class="text-white antialiased">
-  <div class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute left-[-120px] top-[-120px] h-72 w-72 rounded-full bg-slatex-500/25 blur-3xl"></div>
-    <div class="absolute right-[-100px] top-[140px] h-72 w-72 rounded-full bg-slatex-200/20 blur-3xl"></div>
-    <div class="absolute bottom-[-100px] left-[20%] h-80 w-80 rounded-full bg-slatex-700/20 blur-3xl"></div>
-    <div class="absolute inset-0 grid-fade opacity-30"></div>
-  </div>
-
-  <header class="sticky top-0 z-50">
-    <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-      <nav class="glass glass-reflect flex items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
-        <a href="#home" class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg font-bold text-white">
-            S
-          </div>
-          <div>
-            <p class="text-sm font-semibold tracking-wide text-white">SusScan</p>
-            <p class="text-xs text-white/70">Analyst Interface</p>
-          </div>
-        </a>
-
-        <div class="hidden items-center gap-2 md:flex">
-          <a href="#home"
-            class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">Home</a>
-          <a href="#scan"
-            class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">Scan</a>
-          <a href="#history"
-            class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">History</a>
-          <a href="#about"
-            class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">About</a>
-        </div>
-
-        <a href="#scan"
-          class="rounded-xl bg-white/15 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20">
-          Start Scan
-        </a>
-      </nav>
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="absolute left-[-120px] top-[-120px] h-72 w-72 rounded-full bg-slatex-500/25 blur-3xl"></div>
+        <div class="absolute right-[-100px] top-[140px] h-72 w-72 rounded-full bg-slatex-700/15 blur-3xl"></div>
+        <div class="absolute bottom-[-100px] left-[20%] h-80 w-80 rounded-full bg-slatex-700/20 blur-3xl"></div>
+        <div class="absolute inset-0 grid-fade opacity-30"></div>
     </div>
-  </header>
 
-  <main class="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
-    <!-- HOME -->
-    <section id="home" class="section-anchor">
-      <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div class="glass glass-reflect rounded-3xl p-6 sm:p-8 lg:p-10">
-          <div
-            class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/85">
-            Static PE & APK Triage Platform
-          </div>
+    <header class="sticky top-0 z-50">
+        <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+            <nav class="glass glass-reflect flex items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
+                <a href="#home" class="flex items-center gap-3">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-lg font-bold text-white">
+                        S
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold tracking-wide text-white">SusScan</p>
+                        <p class="text-xs text-white/70">Analyst Interface</p>
+                    </div>
+                </a>
 
-          <h1 class="mt-5 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
-            Simple malware triage workflow for
-            <span class="text-slatex-200">Windows PE</span> and
-            <span class="text-slatex-200">Android APK</span>
-          </h1>
+                <div class="hidden items-center gap-2 md:flex">
+                    <a href="#home"
+                        class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">Home</a>
+                    <a href="#scan"
+                        class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">Scan</a>
+                    <a href="#history"
+                        class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">History</a>
+                    <a href="#about"
+                        class="rounded-xl px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 hover:text-white">About</a>
+                </div>
 
-          <p class="mt-5 max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
-            SusScan helps you upload suspicious files, run deterministic static analysis,
-            inspect recent jobs, and review generated reports in a cleaner analyst-focused interface.
-          </p>
-
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href="#scan"
-              class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
-              Upload Sample
-            </a>
-            <a href="#history"
-              class="rounded-2xl border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12">
-              View History
-            </a>
-          </div>
-
-          <div class="mt-10 grid gap-4 sm:grid-cols-3">
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/55">Supported</p>
-              <p class="mt-2 text-lg font-semibold text-white">PE & APK</p>
-            </div>
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/55">Upload Limit</p>
-              <p class="mt-2 text-lg font-semibold text-white">{{ max_upload_mb }} MB</p>
-            </div>
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/55">Recent Jobs</p>
-              <p class="mt-2 text-lg font-semibold text-white">{{ recent_jobs|length }}</p>
-            </div>
-          </div>
+                <a href="#scan"
+                    class="rounded-xl bg-white/15 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20">
+                    Start Scan
+                </a>
+            </nav>
         </div>
+    </header>
 
-        <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
-          <p class="text-xs uppercase tracking-[0.22em] text-white/55">Workflow</p>
-          <h2 class="mt-3 text-2xl font-semibold text-white">How it works</h2>
+    <main class="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+        <!-- HOME -->
+        <section id="home" class="section-anchor">
+            <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                <div class="glass glass-reflect rounded-3xl p-6 sm:p-8 lg:p-10">
+                    <div
+                        class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/85">
+                        Static PE & APK Triage Platform
+                    </div>
 
-          <div class="mt-6 space-y-4">
-            <div class="glass-soft rounded-2xl p-4">
-              <div class="flex items-start gap-3">
-                <div
-                  class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-sm font-semibold">1
+                    <h1 class="mt-5 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
+                        Simple malware triage workflow for
+                        <span class="text-slatex-200">Windows PE</span> and
+                        <span class="text-slatex-200">Android APK</span>
+                    </h1>
+
+                    <p class="mt-5 max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+                        SusScan helps you upload suspicious files, run deterministic static analysis,
+                        inspect recent jobs, and review generated reports in a cleaner analyst-focused interface.
+                    </p>
+
+                    <div class="mt-8 flex flex-wrap gap-3">
+                        <a href="#scan"
+                            class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                            Upload Sample
+                        </a>
+                        <a href="#history"
+                            class="rounded-2xl border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12">
+                            View History
+                        </a>
+                    </div>
+
+                    <div class="mt-10 grid gap-4 sm:grid-cols-3">
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-white/55">Supported</p>
+                            <p class="mt-2 text-lg font-semibold text-white">PE & APK</p>
+                        </div>
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-white/55">Upload Limit</p>
+                            <p class="mt-2 text-lg font-semibold text-white">{{ max_upload_mb }} MB</p>
+                        </div>
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-white/55">Recent Jobs</p>
+                            <p class="mt-2 text-lg font-semibold text-white">{{ recent_jobs|length }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                  <p class="font-medium text-white">Upload artifact</p>
-                  <p class="mt-1 text-sm leading-6 text-white/70">
-                    Submit suspicious PE or APK samples for triage through the scan section.
-                  </p>
+
+                <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                    <p class="text-xs uppercase tracking-[0.22em] text-white/55">Workflow</p>
+                    <h2 class="mt-3 text-2xl font-semibold text-white">How it works</h2>
+
+                    <div class="mt-6 space-y-4">
+                        <div class="glass-soft rounded-2xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-sm font-semibold">
+                                    1
+                                </div>
+                                <div>
+                                    <p class="font-medium text-white">Upload artifact</p>
+                                    <p class="mt-1 text-sm leading-6 text-white/70">
+                                        Submit suspicious PE or APK samples for triage through the scan section.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-soft rounded-2xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-sm font-semibold">
+                                    2
+                                </div>
+                                <div>
+                                    <p class="font-medium text-white">Run static checks</p>
+                                    <p class="mt-1 text-sm leading-6 text-white/70">
+                                        The platform collects deterministic findings, trust signals, and correlation
+                                        results.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-soft rounded-2xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-sm font-semibold">
+                                    3
+                                </div>
+                                <div>
+                                    <p class="font-medium text-white">Review reports</p>
+                                    <p class="mt-1 text-sm leading-6 text-white/70">
+                                        Open the generated job or report view, inspect history, and continue analysis.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
+        </section>
 
-            <div class="glass-soft rounded-2xl p-4">
-              <div class="flex items-start gap-3">
-                <div
-                  class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-sm font-semibold">2
-                </div>
-                <div>
-                  <p class="font-medium text-white">Run static checks</p>
-                  <p class="mt-1 text-sm leading-6 text-white/70">
-                    The platform collects deterministic findings, trust signals, and correlation results.
-                  </p>
-                </div>
-              </div>
-            </div>
+        <!-- SCAN -->
+        <section id="scan" class="section-anchor mt-10">
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.22em] text-white/55">Scan Page</p>
+                        <h2 class="mt-2 text-3xl font-semibold text-white">Upload a sample</h2>
+                        <p class="mt-2 max-w-2xl text-sm leading-6 text-white/72">
+                            Submit a file and let SusScan create a job for analysis. The workflow remains the same,
+                            only the interface is cleaner and more guided.
+                        </p>
+                    </div>
 
-            <div class="glass-soft rounded-2xl p-4">
-              <div class="flex items-start gap-3">
-                <div
-                  class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-sm font-semibold">3
+                    <div class="rounded-2xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/75">
+                        Maximum upload size: <span class="font-semibold text-white">{{ max_upload_mb }} MB</span>
+                    </div>
                 </div>
-                <div>
-                  <p class="font-medium text-white">Review reports</p>
-                  <p class="mt-1 text-sm leading-6 text-white/70">
-                    Open the generated job or report view, inspect history, and continue analysis.
-                  </p>
-                </div>
-              </div>
+
+                <form action="/upload" method="post" enctype="multipart/form-data" class="mt-8">
+                    <label for="sample" class="block">
+                        <div
+                            class="glass-soft group rounded-3xl border border-dashed border-white/20 p-6 transition hover:border-white/35 hover:bg-white/10 sm:p-8">
+                            <div class="flex flex-col items-center justify-center text-center">
+                                <div
+                                    class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/12 text-2xl shadow-glass">
+                                    ⤴
+                                </div>
+                                <h3 class="mt-5 text-xl font-semibold text-white">Choose a file to scan</h3>
+                                <p class="mt-2 max-w-xl text-sm leading-6 text-white/68">
+                                    Upload PE or APK samples for static triage. This interface keeps the backend upload
+                                    flow unchanged.
+                                </p>
+
+                                <div class="mt-6">
+                                    <span
+                                        class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition group-hover:bg-slatex-200">
+                                        Select File
+                                    </span>
+                                </div>
+
+                                <p id="selectedFileName" class="mt-4 text-sm text-white/72">No file selected</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <input id="sample" name="sample" type="file" class="sr-only" required />
+
+                    <div class="mt-6 flex flex-wrap items-center gap-3">
+                        <button type="submit"
+                            class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                            Start Analysis
+                        </button>
+
+                        <a href="#history"
+                            class="rounded-2xl border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12">
+                            Open History
+                        </a>
+                    </div>
+                </form>
             </div>
-          </div>
+        </section>
+
+        <!-- HISTORY -->
+        <section id="history" class="section-anchor mt-10">
+            <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.22em] text-white/55">History</p>
+                        <h2 class="mt-2 text-3xl font-semibold text-white">Recent jobs</h2>
+                        <p class="mt-2 text-sm leading-6 text-white/72">
+                            Browse the latest analysis jobs, reopen them, or remove them from the history list.
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/75">
+                        Total shown: <span class="font-semibold text-white">{{ recent_jobs|length }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 overflow-hidden rounded-3xl border border-white/12 bg-white/6">
+                    <div
+                        class="hidden grid-cols-[1.3fr_1fr_0.7fr_1fr] gap-4 border-b border-white/10 px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white/50 md:grid">
+                        <div>File</div>
+                        <div>Job ID</div>
+                        <div>Status</div>
+                        <div class="text-right">Actions</div>
+                    </div>
+
+                    {% if recent_jobs %}
+                    <div class="divide-y divide-white/10">
+                        {% for job in recent_jobs %}
+                        <div class="px-5 py-5">
+                            <div class="grid gap-4 md:grid-cols-[1.3fr_1fr_0.7fr_1fr] md:items-center">
+                                <div>
+                                    <p class="font-semibold text-white">{{ job.original_filename }}</p>
+                                    <p class="mt-1 text-xs text-white/55">{{ job.created_at }}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm text-white/80">{{ job.id }}</p>
+                                </div>
+
+                                <div>
+                                    {% if job.status == "completed" %}
+                                    <span
+                                        class="inline-flex rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-200">
+                                        Completed
+                                    </span>
+                                    {% elif job.status == "processing" %}
+                                    <span
+                                        class="inline-flex rounded-full bg-amber-400/15 px-3 py-1 text-xs font-semibold text-amber-100">
+                                        Processing
+                                    </span>
+                                    {% elif job.status == "failed" %}
+                                    <span
+                                        class="inline-flex rounded-full bg-rose-400/15 px-3 py-1 text-xs font-semibold text-rose-200">
+                                        Failed
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/75">
+                                        {{ job.status }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="flex flex-wrap justify-start gap-2 md:justify-end">
+                                    {% if job.status == "completed" %}
+                                    <a href="/jobs/{{ job.id }}"
+                                        class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                                        View
+                                    </a>
+                                    {% else %}
+                                    <a href="/report/{{ job.id }}"
+                                        class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                                        View
+                                    </a>
+                                    {% endif %}
+
+                                    <form method="post" action="/jobs/{{ job.id }}/delete" class="confirmable-form"
+                                        data-confirm-title="Delete job"
+                                        data-confirm-message="Delete this job from history and remove its saved files?"
+                                        data-confirm-button="Delete" data-confirm-danger="true">
+                                        <button type="submit"
+                                            class="rounded-xl border border-white/18 bg-white/8 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/12">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="px-6 py-12 text-center">
+                        <div
+                            class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-2xl">
+                            ⌁
+                        </div>
+                        <h3 class="mt-4 text-lg font-semibold text-white">No jobs yet</h3>
+                        <p class="mt-2 text-sm text-white/68">
+                            Your uploaded samples will appear here after you start an analysis.
+                        </p>
+                        <a href="#scan"
+                            class="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                            Upload First Sample
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="section-anchor mt-10">
+            <div class="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+                <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                    <p class="text-xs uppercase tracking-[0.22em] text-white/55">About</p>
+                    <h2 class="mt-2 text-3xl font-semibold text-white">About SusScan Analyst</h2>
+                    <p class="mt-4 max-w-2xl text-sm leading-7 text-white/74">
+                        SusScan Analyst is a clean analyst-facing interface for sample upload, job monitoring,
+                        and report access. The focus is a simple workflow, readable components, and a consistent
+                        triage experience built around your existing backend.
+                    </p>
+
+                    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-sm font-semibold text-white">Design style</p>
+                            <p class="mt-2 text-sm leading-6 text-white/68">
+                                Glassy, reflective, minimal, and centered around the blue palette you provided.
+                            </p>
+                        </div>
+
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-sm font-semibold text-white">Frontend stack</p>
+                            <p class="mt-2 text-sm leading-6 text-white/68">
+                                Tailwind CDN, simple Jinja templates, and no backend logic changes for this page.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
+                    <p class="text-xs uppercase tracking-[0.22em] text-white/55">Developer Contact</p>
+                    <h2 class="mt-2 text-3xl font-semibold text-white">Contact</h2>
+
+                    <div class="mt-6 space-y-4">
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-white/50">Developer</p>
+                            <p class="mt-2 text-base font-semibold text-white">Rice</p>
+                        </div>
+
+                        <div class="glass-soft rounded-2xl p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-white/50">GitHub</p>
+                            <a href="https://github.com/NasiGoRank" target="_blank"
+                                class="mt-2 text-base font-semibold text-white hover:text-blue-400">github.com/NasiGoRank</a>
+                        </div>
+
+                        <div id="lanyardCard" class="glass-soft rounded-2xl p-4">
+                            <div class="flex items-start gap-4">
+                                <img id="lanyardAvatar" src="https://cdn.discordapp.com/embed/avatars/0.png"
+                                    alt="Discord avatar"
+                                    class="h-16 w-16 rounded-2xl border border-white/15 object-cover bg-white/10" />
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Discord Presence
+                                        </p>
+                                        <span id="lanyardStatusBadge"
+                                            class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/75">
+                                            Loading...
+                                        </span>
+                                    </div>
+
+                                    <p id="lanyardName" class="mt-2 text-base font-semibold text-white">Loading
+                                        profile...</p>
+                                    <p id="lanyardMeta" class="mt-1 text-sm text-white/68">Fetching Discord presence
+                                        data...</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                                <div class="rounded-2xl border border-white/10 bg-white/6 p-3">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Custom Status</p>
+                                    <p id="lanyardCustomStatus" class="mt-2 text-sm leading-6 text-white/78">No custom
+                                        status</p>
+                                </div>
+
+                                <div class="rounded-2xl border border-white/10 bg-white/6 p-3">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Now Playing</p>
+                                    <p id="lanyardSpotify" class="mt-2 text-sm leading-6 text-white/78">Not listening to
+                                        Spotify</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                                <div class="rounded-2xl border border-white/10 bg-white/6 p-3">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Desktop</p>
+                                    <p id="lanyardDesktop" class="mt-2 text-sm font-semibold text-white/78">Unknown</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-white/6 p-3">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Mobile</p>
+                                    <p id="lanyardMobile" class="mt-2 text-sm font-semibold text-white/78">Unknown</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-white/6 p-3">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Web</p>
+                                    <p id="lanyardWeb" class="mt-2 text-sm font-semibold text-white/78">Unknown</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
+        <div class="glass rounded-2xl px-6 py-4 text-center text-sm text-white/68">
+            SusScan Analyst · Glassy interface concept · Tailwind CDN
         </div>
-      </div>
-    </section>
+    </footer>
 
-    <!-- SCAN -->
-    <section id="scan" class="section-anchor mt-10">
-      <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs uppercase tracking-[0.22em] text-white/55">Scan Page</p>
-            <h2 class="mt-2 text-3xl font-semibold text-white">Upload a sample</h2>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-white/72">
-              Submit a file and let SusScan create a job for analysis. The workflow remains the same,
-              only the interface is cleaner and more guided.
-            </p>
-          </div>
+    <div id="confirmModal" class="confirm-modal" aria-hidden="true">
+        <div class="confirm-modal-backdrop" data-confirm-cancel></div>
 
-          <div class="rounded-2xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/75">
-            Maximum upload size: <span class="font-semibold text-white">{{ max_upload_mb }} MB</span>
-          </div>
-        </div>
+        <div class="confirm-modal-card">
+            <div class="px-6 py-5 border-b border-white/12 bg-white/8">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.18em] text-white/50">Confirmation</p>
+                        <h3 id="confirmModalTitle" class="mt-2 text-xl font-semibold text-white">Confirm action</h3>
+                    </div>
 
-        <form action="/upload" method="post" enctype="multipart/form-data" class="mt-8">
-          <label for="sample" class="block">
-            <div
-              class="glass-soft group rounded-3xl border border-dashed border-white/20 p-6 transition hover:border-white/35 hover:bg-white/10 sm:p-8">
-              <div class="flex flex-col items-center justify-center text-center">
-                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/12 text-2xl shadow-glass">
-                  ⤴
-                </div>
-                <h3 class="mt-5 text-xl font-semibold text-white">Choose a file to scan</h3>
-                <p class="mt-2 max-w-xl text-sm leading-6 text-white/68">
-                  Upload PE or APK samples for static triage. This interface keeps the backend upload flow unchanged.
-                </p>
-
-                <div class="mt-6">
-                  <span
-                    class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition group-hover:bg-slatex-200">
-                    Select File
-                  </span>
-                </div>
-
-                <p id="selectedFileName" class="mt-4 text-sm text-white/72">No file selected</p>
-              </div>
-            </div>
-          </label>
-
-          <input id="sample" name="sample" type="file" class="sr-only" required />
-
-          <div class="mt-6 flex flex-wrap items-center gap-3">
-            <button type="submit"
-              class="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
-              Start Analysis
-            </button>
-
-            <a href="#history"
-              class="rounded-2xl border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12">
-              Open History
-            </a>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- HISTORY -->
-    <section id="history" class="section-anchor mt-10">
-      <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-xs uppercase tracking-[0.22em] text-white/55">History</p>
-            <h2 class="mt-2 text-3xl font-semibold text-white">Recent jobs</h2>
-            <p class="mt-2 text-sm leading-6 text-white/72">
-              Browse the latest analysis jobs, reopen them, or remove them from the history list.
-            </p>
-          </div>
-
-          <div class="rounded-2xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/75">
-            Total shown: <span class="font-semibold text-white">{{ recent_jobs|length }}</span>
-          </div>
-        </div>
-
-        <div class="mt-8 overflow-hidden rounded-3xl border border-white/12 bg-white/6">
-          <div
-            class="hidden grid-cols-[1.3fr_1fr_0.7fr_1fr] gap-4 border-b border-white/10 px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white/50 md:grid">
-            <div>File</div>
-            <div>Job ID</div>
-            <div>Status</div>
-            <div class="text-right">Actions</div>
-          </div>
-
-          {% if recent_jobs %}
-          <div class="divide-y divide-white/10">
-            {% for job in recent_jobs %}
-            <div class="px-5 py-5">
-              <div class="grid gap-4 md:grid-cols-[1.3fr_1fr_0.7fr_1fr] md:items-center">
-                <div>
-                  <p class="font-semibold text-white">{{ job.original_filename }}</p>
-                  <p class="mt-1 text-xs text-white/55">{{ job.created_at }}</p>
-                </div>
-
-                <div>
-                  <p class="text-sm text-white/80">{{ job.id }}</p>
-                </div>
-
-                <div>
-                  {% if job.status == "completed" %}
-                  <span
-                    class="inline-flex rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-200">
-                    Completed
-                  </span>
-                  {% elif job.status == "processing" %}
-                  <span class="inline-flex rounded-full bg-amber-400/15 px-3 py-1 text-xs font-semibold text-amber-100">
-                    Processing
-                  </span>
-                  {% elif job.status == "failed" %}
-                  <span class="inline-flex rounded-full bg-rose-400/15 px-3 py-1 text-xs font-semibold text-rose-200">
-                    Failed
-                  </span>
-                  {% else %}
-                  <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/75">
-                    {{ job.status }}
-                  </span>
-                  {% endif %}
-                </div>
-
-                <div class="flex flex-wrap justify-start gap-2 md:justify-end">
-                  {% if job.status == "completed" %}
-                  <a href="/jobs/{{ job.id }}"
-                    class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
-                    View
-                  </a>
-                  {% else %}
-                  <a href="/report/{{ job.id }}"
-                    class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
-                    View
-                  </a>
-                  {% endif %}
-
-                  <form method="post" action="/jobs/{{ job.id }}/delete" class="confirmable-form"
-                    data-confirm-title="Delete job"
-                    data-confirm-message="Delete this job from history and remove its saved files?"
-                    data-confirm-button="Delete" data-confirm-danger="true">
-                    <button type="submit"
-                      class="rounded-xl border border-white/18 bg-white/8 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/12">
-                      Delete
+                    <button id="confirmModalClose" type="button"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-lg text-white/90 transition hover:bg-white/15"
+                        aria-label="Close confirmation dialog">
+                        ×
                     </button>
-                  </form>
                 </div>
-              </div>
             </div>
-            {% endfor %}
-          </div>
-          {% else %}
-          <div class="px-6 py-12 text-center">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-2xl">
-              ⌁
+
+            <div class="px-6 py-5">
+                <p id="confirmModalMessage" class="text-sm leading-7 text-white/78">Are you sure you want to continue?
+                </p>
             </div>
-            <h3 class="mt-4 text-lg font-semibold text-white">No jobs yet</h3>
-            <p class="mt-2 text-sm text-white/68">
-              Your uploaded samples will appear here after you start an analysis.
-            </p>
-            <a href="#scan"
-              class="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
-              Upload First Sample
-            </a>
-          </div>
-          {% endif %}
+
+            <div class="flex items-center justify-end gap-3 px-6 pb-6">
+                <button id="confirmModalCancel" type="button"
+                    class="rounded-2xl border border-white/18 bg-white/8 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/12">
+                    Cancel
+                </button>
+
+                <button id="confirmModalConfirm" type="button"
+                    class="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
+                    Confirm
+                </button>
+            </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about" class="section-anchor mt-10">
-      <div class="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-        <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
-          <p class="text-xs uppercase tracking-[0.22em] text-white/55">About</p>
-          <h2 class="mt-2 text-3xl font-semibold text-white">About SusScan Analyst</h2>
-          <p class="mt-4 max-w-2xl text-sm leading-7 text-white/74">
-            SusScan Analyst is a clean analyst-facing interface for sample upload, job monitoring,
-            and report access. The focus is a simple workflow, readable components, and a consistent
-            triage experience built around your existing backend.
-          </p>
-
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-sm font-semibold text-white">Design style</p>
-              <p class="mt-2 text-sm leading-6 text-white/68">
-                Glassy, reflective, minimal, and centered around the blue palette you provided.
-              </p>
-            </div>
-
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-sm font-semibold text-white">Frontend stack</p>
-              <p class="mt-2 text-sm leading-6 text-white/68">
-                Tailwind CDN, simple Jinja templates, and no backend logic changes for this page.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="glass glass-reflect rounded-3xl p-6 sm:p-8">
-          <p class="text-xs uppercase tracking-[0.22em] text-white/55">Developer Contact</p>
-          <h2 class="mt-2 text-3xl font-semibold text-white">Contact</h2>
-
-          <div class="mt-6 space-y-4">
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/50">Developer</p>
-              <p class="mt-2 text-base font-semibold text-white">Your Name Here</p>
-            </div>
-
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/50">Email</p>
-              <p class="mt-2 text-base font-semibold text-white">your.email@example.com</p>
-            </div>
-
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/50">GitHub</p>
-              <p class="mt-2 text-base font-semibold text-white">github.com/yourusername</p>
-            </div>
-
-            <div class="glass-soft rounded-2xl p-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-white/50">Notes</p>
-              <p class="mt-2 text-sm leading-6 text-white/68">
-                Replace these placeholders with your real contact details.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
-    <div class="glass rounded-2xl px-6 py-4 text-center text-sm text-white/68">
-      SusScan Analyst · Glassy interface concept · Tailwind CDN
     </div>
-  </footer>
-
-  <div id="confirmModal" class="confirm-modal" aria-hidden="true">
-    <div class="confirm-modal-backdrop" data-confirm-cancel></div>
-
-    <div class="confirm-modal-card">
-      <div class="px-6 py-5 border-b border-white/12 bg-white/8">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <p class="text-xs uppercase tracking-[0.18em] text-white/50">Confirmation</p>
-            <h3 id="confirmModalTitle" class="mt-2 text-xl font-semibold text-white">Confirm action</h3>
-          </div>
-
-          <button id="confirmModalClose" type="button"
-            class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-lg text-white/90 transition hover:bg-white/15"
-            aria-label="Close confirmation dialog">
-            ×
-          </button>
-        </div>
-      </div>
-
-      <div class="px-6 py-5">
-        <p id="confirmModalMessage" class="text-sm leading-7 text-white/78">Are you sure you want to continue?</p>
-      </div>
-
-      <div class="flex items-center justify-end gap-3 px-6 pb-6">
-        <button id="confirmModalCancel" type="button"
-          class="rounded-2xl border border-white/18 bg-white/8 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/12">
-          Cancel
-        </button>
-
-        <button id="confirmModalConfirm" type="button"
-          class="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slatex-900 transition hover:bg-slatex-200">
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
 
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
-      function initConfirmModal() {
-        const modal = document.getElementById('confirmModal');
-        const modalTitle = document.getElementById('confirmModalTitle');
-        const modalMessage = document.getElementById('confirmModalMessage');
-        const modalConfirm = document.getElementById('confirmModalConfirm');
-        const modalCancel = document.getElementById('confirmModalCancel');
-        const modalClose = document.getElementById('confirmModalClose');
-        const backdropCancel = modal ? modal.querySelector('[data-confirm-cancel]') : null;
+            function initConfirmModal() {
+                const modal = document.getElementById('confirmModal');
+                const modalTitle = document.getElementById('confirmModalTitle');
+                const modalMessage = document.getElementById('confirmModalMessage');
+                const modalConfirm = document.getElementById('confirmModalConfirm');
+                const modalCancel = document.getElementById('confirmModalCancel');
+                const modalClose = document.getElementById('confirmModalClose');
+                const backdropCancel = modal ? modal.querySelector('[data-confirm-cancel]') : null;
 
-        let resolver = null;
+                let resolver = null;
 
-        function closeConfirmModal(result = false) {
-          if (!modal) return;
-          modal.classList.remove('open');
-          modal.setAttribute('aria-hidden', 'true');
+                function closeConfirmModal(result = false) {
+                    if (!modal) return;
+                    modal.classList.remove('open');
+                    modal.setAttribute('aria-hidden', 'true');
 
-          if (resolver) {
-            resolver(result);
-            resolver = null;
-          }
-        }
+                    if (resolver) {
+                        resolver(result);
+                        resolver = null;
+                    }
+                }
 
-        window.openConfirmModal = function ({
-          title = 'Confirm action',
-          message = 'Are you sure you want to continue?',
-          confirmText = 'Confirm',
-          danger = false,
-        } = {}) {
-          if (!modal) return Promise.resolve(false);
+                window.openConfirmModal = function ({
+                    title = 'Confirm action',
+                    message = 'Are you sure you want to continue?',
+                    confirmText = 'Confirm',
+                    danger = false,
+                } = {}) {
+                    if (!modal) return Promise.resolve(false);
 
-          modalTitle.textContent = title;
-          modalMessage.textContent = message;
-          modalConfirm.textContent = confirmText;
+                    modalTitle.textContent = title;
+                    modalMessage.textContent = message;
+                    modalConfirm.textContent = confirmText;
 
-          if (danger) {
-            modalConfirm.classList.add('confirm-danger');
-            modalConfirm.classList.remove('bg-white', 'text-slatex-900', 'hover:bg-slatex-200');
-          } else {
-            modalConfirm.classList.remove('confirm-danger');
-            modalConfirm.classList.add('bg-white', 'text-slatex-900', 'hover:bg-slatex-200');
-          }
+                    if (danger) {
+                        modalConfirm.classList.add('confirm-danger');
+                        modalConfirm.classList.remove('bg-white', 'text-slatex-900', 'hover:bg-slatex-200');
+                    } else {
+                        modalConfirm.classList.remove('confirm-danger');
+                        modalConfirm.classList.add('bg-white', 'text-slatex-900', 'hover:bg-slatex-200');
+                    }
 
-          modal.classList.add('open');
-          modal.setAttribute('aria-hidden', 'false');
+                    modal.classList.add('open');
+                    modal.setAttribute('aria-hidden', 'false');
 
-          return new Promise((resolve) => {
-            resolver = resolve;
-          });
-        };
+                    return new Promise((resolve) => {
+                        resolver = resolve;
+                    });
+                };
 
-        if (modalConfirm) modalConfirm.addEventListener('click', () => closeConfirmModal(true));
-        if (modalCancel) modalCancel.addEventListener('click', () => closeConfirmModal(false));
-        if (modalClose) modalClose.addEventListener('click', () => closeConfirmModal(false));
-        if (backdropCancel) backdropCancel.addEventListener('click', () => closeConfirmModal(false));
+                if (modalConfirm) modalConfirm.addEventListener('click', () => closeConfirmModal(true));
+                if (modalCancel) modalCancel.addEventListener('click', () => closeConfirmModal(false));
+                if (modalClose) modalClose.addEventListener('click', () => closeConfirmModal(false));
+                if (backdropCancel) backdropCancel.addEventListener('click', () => closeConfirmModal(false));
 
-        document.addEventListener('keydown', (event) => {
-          if (event.key === 'Escape' && modal && modal.classList.contains('open')) {
-            closeConfirmModal(false);
-          }
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && modal && modal.classList.contains('open')) {
+                        closeConfirmModal(false);
+                    }
+                });
+            }
+
+            initConfirmModal();
+
+            document.querySelectorAll('.confirmable-form').forEach((form) => {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const ok = await window.openConfirmModal({
+                        title: form.dataset.confirmTitle || 'Confirm action',
+                        message: form.dataset.confirmMessage || 'Are you sure?',
+                        confirmText: form.dataset.confirmButton || 'Confirm',
+                        danger: form.dataset.confirmDanger === 'true',
+                    });
+
+                    if (ok) form.submit();
+                });
+            });
+
+            const fileInput = document.getElementById('sample');
+            const fileNameLabel = document.getElementById('selectedFileName');
+
+            if (fileInput && fileNameLabel) {
+                fileInput.addEventListener('change', function () {
+                    if (this.files && this.files.length > 0) {
+                        fileNameLabel.textContent = this.files[0].name;
+                    } else {
+                        fileNameLabel.textContent = 'No file selected';
+                    }
+                });
+            }
+
+            async function loadLanyardPresence() {
+                const avatar = document.getElementById('lanyardAvatar');
+                const name = document.getElementById('lanyardName');
+                const meta = document.getElementById('lanyardMeta');
+                const badge = document.getElementById('lanyardStatusBadge');
+                const customStatus = document.getElementById('lanyardCustomStatus');
+                const spotify = document.getElementById('lanyardSpotify');
+                const desktop = document.getElementById('lanyardDesktop');
+                const mobile = document.getElementById('lanyardMobile');
+                const web = document.getElementById('lanyardWeb');
+
+                if (!avatar || !name || !meta || !badge) return;
+
+                const statusMap = {
+                    online: { label: 'Online', className: 'bg-emerald-400/15 text-emerald-200' },
+                    idle: { label: 'Idle', className: 'bg-amber-400/15 text-amber-100' },
+                    dnd: { label: 'Do Not Disturb', className: 'bg-rose-400/15 text-rose-200' },
+                    offline: { label: 'Offline', className: 'bg-white/10 text-white/75' },
+                };
+
+                const boolLabel = (value) => value ? 'Active' : 'Inactive';
+
+                try {
+                    const response = await fetch('https://api.lanyard.rest/v1/users/744433773214564362');
+                    if (!response.ok) {
+                        throw new Error(`Request failed with status ${response.status}`);
+                    }
+
+                    const payload = await response.json();
+                    const data = payload?.data;
+                    const user = data?.discord_user || {};
+                    const activityList = Array.isArray(data?.activities) ? data.activities : [];
+                    const customActivity = activityList.find((activity) => activity.type === 4);
+                    const statusInfo = statusMap[data?.discord_status] || statusMap.offline;
+                    const displayName = user.display_name || user.global_name || user.username || 'Unknown user';
+                    const username = user.username ? `@${user.username}` : 'No username';
+                    const guildTag = user.primary_guild?.tag ? ` · ${user.primary_guild.tag}` : '';
+
+                    badge.textContent = statusInfo.label;
+                    badge.className = `inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusInfo.className}`;
+
+                    name.textContent = displayName;
+                    meta.textContent = `${username}${guildTag}`;
+
+                    if (user.id && user.avatar) {
+                        avatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`;
+                    }
+
+                    customStatus.textContent = customActivity?.state || 'No custom status';
+                    spotify.textContent = data?.listening_to_spotify && data?.spotify
+                        ? `${data.spotify.song} · ${data.spotify.artist}`
+                        : 'Not listening to Spotify';
+
+                    desktop.textContent = boolLabel(Boolean(data?.active_on_discord_desktop));
+                    mobile.textContent = boolLabel(Boolean(data?.active_on_discord_mobile));
+                    web.textContent = boolLabel(Boolean(data?.active_on_discord_web));
+                } catch (error) {
+                    console.error('Failed to load Lanyard presence:', error);
+                    badge.textContent = 'Unavailable';
+                    badge.className = 'inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/75';
+                    name.textContent = 'Discord presence unavailable';
+                    meta.textContent = 'Could not fetch live profile data right now.';
+                    customStatus.textContent = 'Unable to load custom status';
+                    spotify.textContent = 'Unable to load Spotify activity';
+                    desktop.textContent = 'Unavailable';
+                    mobile.textContent = 'Unavailable';
+                    web.textContent = 'Unavailable';
+                }
+            }
+
+            loadLanyardPresence();
         });
-      }
-
-      initConfirmModal();
-
-      document.querySelectorAll('.confirmable-form').forEach((form) => {
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-
-          const ok = await window.openConfirmModal({
-            title: form.dataset.confirmTitle || 'Confirm action',
-            message: form.dataset.confirmMessage || 'Are you sure?',
-            confirmText: form.dataset.confirmButton || 'Confirm',
-            danger: form.dataset.confirmDanger === 'true',
-          });
-
-          if (ok) form.submit();
-        });
-      });
-
-      const fileInput = document.getElementById('sample');
-      const fileNameLabel = document.getElementById('selectedFileName');
-
-      if (fileInput && fileNameLabel) {
-        fileInput.addEventListener('change', function () {
-          if (this.files && this.files.length > 0) {
-            fileNameLabel.textContent = this.files[0].name;
-          } else {
-            fileNameLabel.textContent = 'No file selected';
-          }
-        });
-      }
-    });
-  </script>
+    </script>
 
 </body>
 
