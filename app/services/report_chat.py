@@ -199,7 +199,7 @@ def ask_report_chatbot(
     try:
         client = OpenAI(
             api_key=settings.groq_api_key,
-            base_url="https://api.groq.com/openai/v1",
+            base_url=settings.groq_base_url,
         )
 
         response = client.chat.completions.create(
