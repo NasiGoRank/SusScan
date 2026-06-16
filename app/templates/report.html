@@ -34,9 +34,9 @@
 
         body {
             background:
-                radial-gradient(circle at top left, rgba(84, 139, 194, 0.18), transparent 28%),
-                radial-gradient(circle at top right, rgba(43, 90, 157, 0.14), transparent 24%),
-                linear-gradient(180deg, #0b1733 0%, #10264f 38%, #17386f 68%, #1e4478 100%);
+                radial-gradient(circle at top left, rgba(84, 139, 194, 0.28), transparent 28%),
+                radial-gradient(circle at top right, rgba(177, 215, 229, 0.24), transparent 24%),
+                linear-gradient(180deg, #0d1c3d 0%, #17386f 38%, #25589b 68%, #b1d7e5 100%);
             min-height: 100vh;
         }
 
@@ -234,7 +234,7 @@
 
     <div class="fixed inset-0 -z-10 overflow-hidden">
         <div class="absolute left-[-120px] top-[-120px] h-72 w-72 rounded-full bg-slatex-500/25 blur-3xl"></div>
-        <div class="absolute right-[-100px] top-[140px] h-72 w-72 rounded-full bg-slatex-700/15 blur-3xl"></div>
+        <div class="absolute right-[-100px] top-[140px] h-72 w-72 rounded-full bg-slatex-200/20 blur-3xl"></div>
         <div class="absolute bottom-[-100px] left-[20%] h-80 w-80 rounded-full bg-slatex-700/20 blur-3xl"></div>
         <div class="absolute inset-0 grid-fade opacity-30"></div>
     </div>
@@ -631,9 +631,12 @@
                 </div>
 
                 <div class="glass-soft rounded-2xl p-4">
-                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Full PE Tool Output</p>
-                    <pre
-                        class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ pe | tojson(indent=2) }}</pre>
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">PE Tool Summary</p>
+                    <pre class="pretty-pre mt-3 max-h-[420px] overflow-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ {
+                            "die": pe.get("die", {}),
+                            "floss": pe.get("floss", {}),
+                            "capa": pe.get("capa", {})
+                        } | tojson(indent=2) }}</pre>
                 </div>
             </div>
         </section>
@@ -685,9 +688,12 @@
                 </div>
 
                 <div class="glass-soft rounded-2xl p-4">
-                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">Full APK Tool Output</p>
-                    <pre
-                        class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ apk | tojson(indent=2) }}</pre>
+                    <p class="text-xs uppercase tracking-[0.18em] text-white/50">APK Tool Summary</p>
+                    <pre class="pretty-pre mt-3 max-h-[420px] overflow-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ {
+                            "jadx": apk.get("jadx", {}),
+                            "jadx_output_dir": apk.get("jadx_output_dir"),
+                            "structural_evidence": apk.get("structural_evidence", {})
+                        } | tojson(indent=2) }}</pre>
                 </div>
             </div>
         </section>
