@@ -97,7 +97,7 @@ def _correlation_rules_root() -> Path:
     if env_override:
         return Path(env_override)
 
-    susscan_home = os.getenv("SUSSCAN_HOME", "/opt/susscan")
+    susscan_home = os.getenv("SUSSCAN_HOME", "/opt/SusScan")
     return Path(susscan_home) / "rules" / "correlation"
 
 
@@ -365,7 +365,8 @@ def _derive_features(
     iat = pe_structural.get("iat_red_flags", {})
     sec = pe_structural.get("section_name_and_entropy", {})
     die_keywords = pe_structural.get("die_packer_keywords", []) or []
-    capa_blob = pe_analysis.get("capa", {})
+    capa_summary = pe_analysis.get("capa", {})
+    capa_flags = capa_summary.get("capability_flags", {}) if isinstance(capa_summary, dict) else {}
 
     features.update(
         {
@@ -375,12 +376,16 @@ def _derive_features(
             "pe_has_suspicious_section_names": bool(sec.get("suspicious_section_names", [])),
             "pe_has_high_entropy_sections": bool(sec.get("high_entropy_sections", [])),
             "pe_die_packer_keyword_count": len(die_keywords),
-            "pe_has_injection_capability": _contains_any_text(capa_blob, INJECTION_KEYWORDS),
-            "pe_has_debugger_detection_capability": _contains_any_text(capa_blob, DEBUGGER_KEYWORDS)
+            "pe_has_injection_capability": bool(capa_flags.get("has_injection"))
+            or _contains_any_text(capa_summary, INJECTION_KEYWORDS),
+            "pe_has_debugger_detection_capability": bool(capa_flags.get("has_debugger_detection"))
+            or _contains_any_text(capa_summary, DEBUGGER_KEYWORDS)
             or features["has_anti_debug_yara"],
-            "pe_has_vm_detection_capability": _contains_any_text(capa_blob, VM_KEYWORDS)
+            "pe_has_vm_detection_capability": bool(capa_flags.get("has_vm_detection"))
+            or _contains_any_text(capa_summary, VM_KEYWORDS)
             or features["has_anti_vm_yara"],
-            "pe_has_service_persistence_capability": _contains_any_text(capa_blob, SERVICE_PERSISTENCE_KEYWORDS),
+            "pe_has_service_persistence_capability": bool(capa_flags.get("has_service_persistence"))
+            or _contains_any_text(capa_summary, SERVICE_PERSISTENCE_KEYWORDS),
         }
     )
 
@@ -657,7 +662,7 @@ def apply_phase3_correlation(
     elif trust_state == "known_malicious":
         notes.append("A malicious reputation source increased the score before final classification.")
 
-    score = max(score, 0)
+    score = min(max(score, 0), 100)
     reasons = _dedupe_preserve_order(reasons)
 
     return {
