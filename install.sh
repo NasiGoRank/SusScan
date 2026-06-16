@@ -147,6 +147,214 @@ print(data.get("tag_name", ""))
 PY
 }
 
+die_linux_asset_url() {
+  python3 <<'PY'
+import json
+import platform
+import re
+import sys
+import urllib.request
+from pathlib import Path
+
+
+def load_os_release() -> dict[str, str]:
+    data = {}
+    for path in [Path("/etc/os-release"), Path("/usr/lib/os-release")]:
+        if not path.exists():
+            continue
+
+        for raw in path.read_text(errors="ignore").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+            data[key] = value.strip().strip('"').strip("'")
+
+        if data:
+            return data
+
+    return data
+
+
+def version_tuple(value: str) -> tuple[int, ...]:
+    nums = re.findall(r"\d+", value or "")
+    return tuple(int(num) for num in nums[:3]) if nums else (0,)
+
+
+def fetch_assets() -> list[tuple[str, str]]:
+    url = "https://api.github.com/repos/horsicq/DIE-engine/releases/latest"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "SusScan-installer",
+        },
+    )
+
+    with urllib.request.urlopen(req) as resp:
+        data = json.load(resp)
+
+    assets = []
+    for asset in data.get("assets", []):
+        name = asset.get("name", "")
+        download_url = asset.get("browser_download_url", "")
+        if name and download_url:
+            assets.append((name, download_url))
+
+    return assets
+
+
+def find_closest_ubuntu(assets, target_version):
+    target = version_tuple(target_version)
+    regex = re.compile(r"^die_[0-9.]+_Ubuntu_([0-9]+\.[0-9]+)_amd64\.deb$")
+    candidates = []
+
+    for name, url in assets:
+        match = regex.match(name)
+        if match:
+            candidates.append((version_tuple(match.group(1)), name, url))
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda item: item[0])
+
+    exact = [item for item in candidates if item[0] == target]
+    if exact:
+        return exact[-1][2]
+
+    lower_or_equal = [item for item in candidates if item[0] <= target]
+    if lower_or_equal:
+        chosen = lower_or_equal[-1]
+        print(f"[!] No exact Ubuntu package for {target_version}; using {chosen[1]}", file=sys.stderr)
+        return chosen[2]
+
+    return candidates[0][2]
+
+
+def find_closest_debian(assets, target_version):
+    target = version_tuple(target_version)
+    target_major = target[0] if target else 0
+    regex = re.compile(r"^die_[0-9.]+_Debian_([0-9]+)_amd64\.deb$")
+    candidates = []
+
+    for name, url in assets:
+        match = regex.match(name)
+        if match:
+            candidates.append((int(match.group(1)), name, url))
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda item: item[0])
+
+    exact = [item for item in candidates if item[0] == target_major]
+    if exact:
+        return exact[-1][2]
+
+    lower_or_equal = [item for item in candidates if item[0] <= target_major]
+    if lower_or_equal:
+        chosen = lower_or_equal[-1]
+        print(f"[!] No exact Debian package for {target_version}; using {chosen[1]}", file=sys.stderr)
+        return chosen[2]
+
+    return candidates[0][2]
+
+
+def find_kali(assets, target_version):
+    exact_regex = re.compile(rf"^die_[0-9.]+_Kali_{re.escape(target_version)}_amd64\.deb$")
+    for name, url in assets:
+        if exact_regex.match(name):
+            return url
+
+    regex = re.compile(r"^die_[0-9.]+_Kali_([0-9.]+)_amd64\.deb$")
+    candidates = []
+
+    for name, url in assets:
+        match = regex.match(name)
+        if match:
+            candidates.append((version_tuple(match.group(1)), name, url))
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda item: item[0])
+    chosen = candidates[-1]
+    print(f"[!] No exact Kali package for {target_version}; using {chosen[1]}", file=sys.stderr)
+    return chosen[2]
+
+
+os_release = load_os_release()
+os_id = os_release.get("ID", "").lower()
+version_id = os_release.get("VERSION_ID", "")
+id_like = os_release.get("ID_LIKE", "").lower()
+
+machine = platform.machine().lower()
+if machine not in {"x86_64", "amd64"}:
+    print(f"Unsupported architecture for DiE .deb: {machine}", file=sys.stderr)
+    raise SystemExit(1)
+
+assets = fetch_assets()
+selected = None
+
+if os_id == "ubuntu":
+    selected = find_closest_ubuntu(assets, version_id)
+elif os_id == "debian":
+    selected = find_closest_debian(assets, version_id)
+elif os_id == "kali":
+    selected = find_kali(assets, version_id)
+elif "ubuntu" in id_like:
+    selected = find_closest_ubuntu(assets, version_id)
+elif "debian" in id_like:
+    selected = find_closest_debian(assets, version_id)
+
+if not selected:
+    print(f"No compatible DiE package found for ID={os_id}, VERSION_ID={version_id}, ID_LIKE={id_like}", file=sys.stderr)
+    raise SystemExit(1)
+
+print(selected)
+PY
+}
+
+
+install_die() {
+  if [[ ! "${ARCH}" =~ ^(x86_64|amd64)$ ]]; then
+    warn "Skipping Detect It Easy: DiE .deb assets are amd64 only. Current architecture: ${ARCH}"
+    return 0
+  fi
+
+  log "Installing Detect It Easy CLI from distro-matched .deb package..."
+
+  rm -f /usr/local/bin/diec /usr/local/bin/die /usr/local/bin/diel
+
+  local die_deb_url=""
+  local die_deb_path=""
+
+  die_deb_url="$(die_linux_asset_url)" || {
+    warn "Could not resolve compatible Detect It Easy package. DiE will not be installed."
+    return 0
+  }
+
+  die_deb_path="${TMP_DIR}/$(basename "${die_deb_url}")"
+
+  log "Downloading DiE package: ${die_deb_url}"
+  download "${die_deb_url}" "${die_deb_path}"
+
+  log "Installing DiE package..."
+  apt-get install -y "${die_deb_path}" || {
+    warn "DiE package dependency issue detected. Running apt --fix-broken..."
+    apt-get --fix-broken install -y
+    apt-get install -y "${die_deb_path}"
+  }
+
+  if ! command -v diec >/dev/null 2>&1; then
+    fail "Detect It Easy package installed, but diec command was not found."
+  fi
+
+  log "DiE CLI installed at: $(command -v diec)"
+}
+
 find_one() {
   local root="$1"
   local name="$2"
@@ -606,16 +814,45 @@ else
 fi
 
 download "${CAPA_RULES_URL}" "${TMP_DIR}/capa-rules.zip"
-rm -rf "${TOOLS_DIR}/capa-rules" "${TOOLS_DIR}"/capa-rules-* "${TOOLS_DIR}/capa"
+rm -rf "${TOOLS_DIR}/capa-rules" "${TOOLS_DIR}"/capa-rules-* "${TOOLS_DIR}/capa" "${TOOLS_DIR}/capa-sigs"
 unzip -q "${TMP_DIR}/capa-rules.zip" -d "${TOOLS_DIR}"
 CAPA_RULES_EXTRACTED_DIR="$(find "${TOOLS_DIR}" -maxdepth 1 -mindepth 1 -type d -name 'capa-rules*' | head -n 1)"
 [[ -n "${CAPA_RULES_EXTRACTED_DIR}" ]] || fail "Failed to locate extracted capa-rules directory."
 ln -sfn "${CAPA_RULES_EXTRACTED_DIR}" "${TOOLS_DIR}/capa-rules"
-cat > /usr/local/bin/capa <<EOF2
+
+log "Installing capa signatures..."
+CAPA_SRC_CANDIDATE_URL="https://github.com/mandiant/capa/archive/refs/tags/v${CAPA_VERSION}.zip"
+
+if url_exists "${CAPA_SRC_CANDIDATE_URL}"; then
+  CAPA_SRC_URL="${CAPA_SRC_CANDIDATE_URL}"
+else
+  warn "No exact capa source tag for flare-capa ${CAPA_VERSION}; falling back to latest capa source."
+  CAPA_SRC_TAG="$(gh_latest_tag "mandiant/capa")"
+  [[ -n "${CAPA_SRC_TAG}" ]] || fail "Failed to resolve latest capa tag."
+  CAPA_SRC_URL="https://github.com/mandiant/capa/archive/refs/tags/${CAPA_SRC_TAG}.zip"
+fi
+
+download "${CAPA_SRC_URL}" "${TMP_DIR}/capa-src.zip"
+rm -rf "${TMP_DIR}/capa-src"
+mkdir -p "${TMP_DIR}/capa-src"
+unzip -q "${TMP_DIR}/capa-src.zip" -d "${TMP_DIR}/capa-src"
+
+CAPA_SIGS_DIR="$(find "${TMP_DIR}/capa-src" -type d -path '*/sigs' | head -n 1)"
+[[ -n "${CAPA_SIGS_DIR}" ]] || fail "Failed to locate capa sigs directory."
+
+rm -rf "${TOOLS_DIR}/capa-sigs"
+cp -a "${CAPA_SIGS_DIR}" "${TOOLS_DIR}/capa-sigs"
+
+cat > "${BIN_DIR}/capa" <<EOF2
 #!/usr/bin/env bash
-exec "${VENV_DIR}/bin/capa" -r "${TOOLS_DIR}/capa-rules" "\$@"
+exec "${VENV_DIR}/bin/capa" \\
+  -r "${TOOLS_DIR}/capa-rules" \\
+  -s "${TOOLS_DIR}/capa-sigs" \\
+  "\$@"
 EOF2
-chmod +x /usr/local/bin/capa
+
+chmod +x "${BIN_DIR}/capa"
+ln -sfn "${BIN_DIR}/capa" /usr/local/bin/capa
 
 log "Installing FLOSS (latest Linux zip release)..."
 FLOSS_URL="$(gh_latest_asset_url "mandiant/flare-floss" 'linux.*\.zip$')"
@@ -628,32 +865,8 @@ FLOSS_BIN="$(find_one "${TOOLS_DIR}/floss" 'floss')"
 chmod +x "${FLOSS_BIN}"
 ln -sfn "${FLOSS_BIN}" /usr/local/bin/floss
 
-if [[ "${ARCH}" =~ ^(x86_64|amd64)$ ]]; then
-  log "Installing Detect It Easy (latest x86_64 AppImage)..."
-  DIE_URL="$(gh_latest_asset_url "horsicq/DIE-engine" 'Detect_It_Easy-.*-x86_64\.AppImage$')"
-  mkdir -p "${TOOLS_DIR}/die"
-  download "${DIE_URL}" "${TOOLS_DIR}/die/Detect_It_Easy.AppImage"
-  chmod +x "${TOOLS_DIR}/die/Detect_It_Easy.AppImage"
-  cat > /usr/local/bin/die <<'EOF2'
-#!/usr/bin/env bash
-set -Eeuo pipefail
-APPIMAGE_EXTRACT_AND_RUN=1 exec /opt/SusScan/tools/die/Detect_It_Easy.AppImage "$@"
-EOF2
-  chmod +x /usr/local/bin/die
-  ln -sfn /usr/local/bin/die /usr/local/bin/diec
-  ln -sfn /usr/local/bin/die /usr/local/bin/diel
-else
-  warn "Skipping Detect It Easy: upstream Linux assets are x86_64/amd64 only. Current architecture: ${ARCH}"
-fi
+install_die
 
-log "Writing a tiny sample YARA rule..."
-cat > "${RULES_DIR}/sample.yar" <<'EOF2'
-rule always_true_sample
-{
-  condition:
-    true
-}
-EOF2
 
 run_rule_setup_if_present
 
@@ -695,9 +908,10 @@ echo "FLOSS version:"
 floss --version || true
 
 if command -v diec >/dev/null 2>&1; then
-  echo "DiE wrapper installed at: $(command -v diec)"
+  echo "DiE CLI installed at: $(command -v diec)"
+  diec --version 2>/dev/null || diec -h 2>/dev/null | head -n 8 || true
 else
-  echo "DiE wrapper: skipped"
+  echo "DiE CLI: skipped"
 fi
 
 chown -R "${APP_RUN_USER}:${APP_RUN_USER}" "${APP_ROOT}"

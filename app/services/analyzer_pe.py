@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -13,12 +14,24 @@ SUSPICIOUS_SECTION_NAMES = {".upx", ".vmp", ".aspack", ".packed", ".petite", ".b
 HIGH_ENTROPY_THRESHOLD = 7.2
 LOW_IMPORT_THRESHOLD = 5
 
+TOOL_STDOUT_PREVIEW_LIMIT = 4000
+CAPA_TOP_RULE_LIMIT = 30
+
 
 def _safe_year_from_timestamp(ts: int | None) -> int | None:
     if not ts:
         return None
     try:
         return datetime.fromtimestamp(ts, tz=timezone.utc).year
+    except Exception:
+        return None
+
+
+def _safe_iso_from_timestamp(ts: int | None) -> str | None:
+    if not ts:
+        return None
+    try:
+        return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
     except Exception:
         return None
 
@@ -93,16 +106,27 @@ def _parse_pe_metadata(path: Path) -> dict[str, Any]:
         timestamp = pe.FILE_HEADER.TimeDateStamp
         rich_header = _parse_rich_header_info(pe)
 
+        machine = hex(pe.FILE_HEADER.Machine)
+        compile_time = _safe_iso_from_timestamp(timestamp)
+
+        try:
+            imphash = pe.get_imphash()
+        except Exception:
+            imphash = None
+
         return {
-            "machine": hex(pe.FILE_HEADER.Machine),
+            "machine": machine,
+            "machine_type": machine,
             "number_of_sections": pe.FILE_HEADER.NumberOfSections,
             "timestamp": timestamp,
             "timestamp_year": _safe_year_from_timestamp(timestamp),
+            "compile_time": compile_time,
             "entry_point": hex(pe.OPTIONAL_HEADER.AddressOfEntryPoint),
             "image_base": hex(pe.OPTIONAL_HEADER.ImageBase),
             "subsystem": pe.OPTIONAL_HEADER.Subsystem,
             "linker_major": getattr(pe.OPTIONAL_HEADER, "MajorLinkerVersion", None),
             "linker_minor": getattr(pe.OPTIONAL_HEADER, "MinorLinkerVersion", None),
+            "imphash": imphash,
             "rich_header": rich_header,
             "sections": sections,
             "imports": imports,
@@ -192,16 +216,232 @@ def _build_structural_evidence(metadata: dict[str, Any], die_result: dict[str, A
     }
 
 
+def _summarize_tool_output(result: dict[str, Any], *, preview_limit: int = TOOL_STDOUT_PREVIEW_LIMIT) -> dict[str, Any]:
+    stdout = result.get("stdout") or ""
+
+    return {
+        "ok": result.get("ok", False),
+        "skipped": result.get("skipped", False),
+        "returncode": result.get("returncode"),
+        "error": result.get("error"),
+        "stderr": result.get("stderr", ""),
+        "command": result.get("command", []),
+        "fallback_reason": result.get("fallback_reason"),
+        "stdout_preview": stdout[:preview_limit],
+        "stdout_truncated": len(stdout) > preview_limit,
+        "stdout_size": len(stdout),
+    }
+
+
+def _extract_attack_id(item: Any) -> str | None:
+    if isinstance(item, dict):
+        value = item.get("id")
+        return str(value) if value else None
+
+    text = str(item or "").strip()
+    if not text:
+        return None
+
+    for part in text.replace(",", " ").split():
+        if part.startswith("T") and any(ch.isdigit() for ch in part):
+            return part
+
+    return None
+
+
+def _extract_mbc_text(item: Any) -> str | None:
+    if isinstance(item, dict):
+        parts = item.get("parts")
+        if isinstance(parts, list) and parts:
+            return "::".join(str(part) for part in parts)
+
+        value = item.get("id") or item.get("name")
+        return str(value) if value else None
+
+    text = str(item or "").strip()
+    return text or None
+
+
+def _summarize_capa(capa_result: dict[str, Any], max_rules: int = CAPA_TOP_RULE_LIMIT) -> dict[str, Any]:
+    summary = {
+        "ok": capa_result.get("ok", False),
+        "returncode": capa_result.get("returncode"),
+        "error": capa_result.get("error"),
+        "stderr": capa_result.get("stderr", ""),
+        "command": capa_result.get("command", []),
+        "matched_rule_count": 0,
+        "top_rules": [],
+        "attack_techniques": [],
+        "mbc_behaviors": [],
+        "capability_flags": {
+            "has_injection": False,
+            "has_debugger_detection": False,
+            "has_vm_detection": False,
+            "has_service_persistence": False,
+            "has_crypto_or_encoding": False,
+        },
+        "stdout_size": len(capa_result.get("stdout") or ""),
+        "raw_stdout_stored": False,
+    }
+
+    stdout = capa_result.get("stdout") or ""
+    if not stdout:
+        return summary
+
+    try:
+        parsed = json.loads(stdout)
+    except Exception as exc:
+        summary["error"] = f"failed to parse capa json: {exc}"
+        return summary
+
+    rules = parsed.get("rules", {})
+    if not isinstance(rules, dict):
+        return summary
+
+    attack_ids: set[str] = set()
+    mbc_items: set[str] = set()
+    top_rules: list[str] = []
+
+    keyword_map = {
+        "has_injection": [
+            "inject",
+            "process injection",
+            "writeprocessmemory",
+            "createremotethread",
+            "queueuserapc",
+            "ntcreatethreadex",
+            "setthreadcontext",
+            "remote thread",
+        ],
+        "has_debugger_detection": [
+            "debugger",
+            "isdebuggerpresent",
+            "checkremotedebuggerpresent",
+            "anti-debug",
+            "debug detection",
+        ],
+        "has_vm_detection": [
+            "virtual",
+            "vmware",
+            "virtualbox",
+            "qemu",
+            "sandbox",
+            "anti-vm",
+            "anti sandbox",
+        ],
+        "has_service_persistence": [
+            "service",
+            "createservice",
+            "openservice",
+            "startservice",
+            "windows service",
+        ],
+        "has_crypto_or_encoding": [
+            "crypto",
+            "encrypt",
+            "decrypt",
+            "xor",
+            "encode",
+            "decode",
+            "aes",
+            "rsa",
+            "base64",
+        ],
+    }
+
+    for rule_name, rule_data in rules.items():
+        rule_name_text = str(rule_name)
+
+        if len(top_rules) < max_rules:
+            top_rules.append(rule_name_text)
+
+        meta = rule_data.get("meta", {}) if isinstance(rule_data, dict) else {}
+
+        for attack in meta.get("attack", []) or []:
+            attack_id = _extract_attack_id(attack)
+            if attack_id:
+                attack_ids.add(attack_id)
+
+        for mbc in meta.get("mbc", []) or []:
+            mbc_text = _extract_mbc_text(mbc)
+            if mbc_text:
+                mbc_items.add(mbc_text)
+
+        searchable = " ".join(
+            [
+                rule_name_text,
+                json.dumps(meta, ensure_ascii=False, default=str),
+            ]
+        ).lower()
+
+        for flag, keywords in keyword_map.items():
+            if any(keyword in searchable for keyword in keywords):
+                summary["capability_flags"][flag] = True
+
+    summary["matched_rule_count"] = len(rules)
+    summary["top_rules"] = top_rules
+    summary["attack_techniques"] = sorted(attack_ids)
+    summary["mbc_behaviors"] = sorted(mbc_items)
+
+    return summary
+
+
+def _run_die(path: Path) -> dict[str, Any]:
+    result = run_command(["diec", str(path)])
+
+    stdout = result.get("stdout") or ""
+    stderr = result.get("stderr") or ""
+    combined = f"{stdout}\n{stderr}".lower()
+
+    if (
+        result.get("returncode") == 127
+        or "diec binary not found" in combined
+        or "not available in the installed appimage" in combined
+        or "could not connect to display" in combined
+        or "qxcbconnection" in combined
+    ):
+        return {
+            "ok": False,
+            "skipped": True,
+            "returncode": result.get("returncode"),
+            "error": "Detect It Easy CLI is not available. DiE analysis was skipped.",
+            "stderr": stderr,
+            "stdout": "",
+            "command": result.get("command", ["diec", str(path)]),
+        }
+
+    return result
+
+
+def _run_floss(path: Path) -> dict[str, Any]:
+    result = run_command(["floss", "--no", "static", "--", str(path)])
+
+    if result.get("ok"):
+        return result
+
+    stdout = result.get("stdout") or ""
+    stderr = result.get("stderr") or ""
+    combined = f"{stdout}\n{stderr}".lower()
+
+    if "unrecognized arguments" in combined or "invalid choice" in combined or "usage:" in combined:
+        fallback = run_command(["floss", "--", str(path)])
+        fallback["fallback_reason"] = "FLOSS rejected filtered mode, so SusScan retried without string-type filtering."
+        return fallback
+
+    return result
+
+
 def analyze_pe(path: Path) -> dict[str, Any]:
     metadata = _parse_pe_metadata(path)
-    die_result = run_command(["diec", str(path)])
-    floss_result = run_command(["floss", "--no-static-strings", str(path)])
+
+    die_result = _run_die(path)
+    floss_result = _run_floss(path)
     capa_result = run_command(["capa", "-j", str(path)])
 
     return {
         "metadata": metadata,
         "structural_evidence": _build_structural_evidence(metadata, die_result),
-        "die": die_result,
-        "floss": floss_result,
-        "capa": capa_result,
+        "die": _summarize_tool_output(die_result),
+        "floss": _summarize_tool_output(floss_result),
+        "capa": _summarize_capa(capa_result),
     }

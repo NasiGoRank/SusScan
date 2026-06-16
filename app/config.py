@@ -59,7 +59,6 @@ class Settings:
     process_timeout_seconds: int = _env_int("SUSSCAN_PROCESS_TIMEOUT_SECONDS", 300)
     enable_jadx_decompile: bool = _env_bool("SUSSCAN_ENABLE_JADX_DECOMPILE", True)
 
-    # Phase 1 trust analysis
     enable_phase1_trust: bool = _env_bool("SUSSCAN_ENABLE_PHASE1_TRUST", True)
     enable_hash_lookup: bool = _env_bool("SUSSCAN_ENABLE_HASH_LOOKUP", True)
     enable_pe_signature_verification: bool = _env_bool("SUSSCAN_ENABLE_PE_SIGNATURE_VERIFICATION", True)
@@ -68,7 +67,6 @@ class Settings:
     hash_lookup_timeout_seconds: int = _env_int("SUSSCAN_HASH_LOOKUP_TIMEOUT_SECONDS", 8)
     trust_cache_ttl_hours: int = _env_int("SUSSCAN_TRUST_CACHE_TTL_HOURS", 168)
 
-    # External reputation providers
     enable_reputation_enrichment: bool = _env_bool("SUSSCAN_ENABLE_REPUTATION_ENRICHMENT", True)
     enabled_reputation_providers: str = os.getenv(
         "SUSSCAN_ENABLED_REPUTATION_PROVIDERS",
@@ -105,7 +103,6 @@ class Settings:
         "https://www.virustotal.com/api/v3/files",
     )
 
-    # Report chatbot
     groq_api_key: str = os.getenv("SUSSCAN_GROQ_API_KEY", "")
     groq_base_url: str = os.getenv("SUSSCAN_GROQ_BASE_URL", "https://api.groq.com/openai/v1")
     groq_chat_completions_url: str = os.getenv(
