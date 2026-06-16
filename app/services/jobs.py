@@ -11,7 +11,7 @@ from config import settings
 from db import delete_job, get_job, insert_job, update_job
 from services.analyzer_apk import analyze_apk
 from services.analyzer_common import detect_magic, run_common_analysis
-from services.analyzer_pe import analyze_pe
+from services.analyzer_pe import analyze_pe, _summarize_capa
 from services.report_builder import build_report
 from services.trust import analyze_trust
 from utils.filetype import classify_artifact_type
@@ -34,6 +34,32 @@ async def create_job_and_store_upload(file: UploadFile) -> str:
     )
     return job_id
 
+def _strip_heavy_raw_tool_output(report: dict) -> dict:
+    pe_analysis = report.get("pe_analysis", {})
+    if not isinstance(pe_analysis, dict):
+        return report
+
+    capa_payload = pe_analysis.get("capa")
+    if isinstance(capa_payload, dict) and isinstance(capa_payload.get("stdout"), str):
+        pe_analysis["capa"] = _summarize_capa(capa_payload)
+
+    for tool_name in ("die", "floss"):
+        payload = pe_analysis.get(tool_name)
+        if not isinstance(payload, dict):
+            continue
+
+        stdout = payload.pop("stdout", None)
+        if isinstance(stdout, str):
+            payload.setdefault("stdout_preview", stdout[:4000])
+            payload.setdefault("stdout_size", len(stdout))
+            payload.setdefault("stdout_truncated", len(stdout) > 4000)
+
+        stderr = payload.get("stderr")
+        if isinstance(stderr, str) and len(stderr) > 4000:
+            payload["stderr"] = stderr[:4000]
+            payload["stderr_truncated"] = True
+
+    return report
 
 def process_job(job_id: str) -> None:
     job = get_job(job_id)
@@ -73,6 +99,8 @@ def process_job(job_id: str) -> None:
             pe_analysis=pe_analysis,
             apk_analysis=apk_analysis,
         )
+
+        report = _strip_heavy_raw_tool_output(report)
 
         report_path = settings.reports_dir / f"{job_id}.json"
         report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")

@@ -630,12 +630,52 @@
                         class="pretty-pre mt-3 overflow-x-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ pe_structural | tojson(indent=2) }}</pre>
                 </div>
 
+                {% set die = pe.get('die', {}) %}
+                {% set floss = pe.get('floss', {}) %}
+                {% set capa = pe.get('capa', {}) %}
+
                 <div class="glass-soft rounded-2xl p-4">
                     <p class="text-xs uppercase tracking-[0.18em] text-white/50">PE Tool Summary</p>
-                    <pre class="pretty-pre mt-3 max-h-[420px] overflow-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ {
-                            "die": pe.get("die", {}),
-                            "floss": pe.get("floss", {}),
-                            "capa": pe.get("capa", {})
+                    <pre
+                        class="pretty-pre mt-3 max-h-[420px] overflow-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ {
+                            "die": {
+                                "ok": die.get("ok"),
+                                "skipped": die.get("skipped"),
+                                "returncode": die.get("returncode"),
+                                "error": die.get("error"),
+                                "stderr": die.get("stderr"),
+                                "command": die.get("command", []),
+                                "fallback_reason": die.get("fallback_reason"),
+                                "stdout_preview": die.get("stdout_preview"),
+                                "stdout_size": die.get("stdout_size", die.get("stdout", "") | length),
+                                "stdout_truncated": die.get("stdout_truncated", die.get("stdout", "") | length > 4000)
+                            },
+                            "floss": {
+                                "ok": floss.get("ok"),
+                                "skipped": floss.get("skipped"),
+                                "returncode": floss.get("returncode"),
+                                "error": floss.get("error"),
+                                "stderr": floss.get("stderr"),
+                                "command": floss.get("command", []),
+                                "fallback_reason": floss.get("fallback_reason"),
+                                "stdout_preview": floss.get("stdout_preview"),
+                                "stdout_size": floss.get("stdout_size", floss.get("stdout", "") | length),
+                                "stdout_truncated": floss.get("stdout_truncated", floss.get("stdout", "") | length > 4000)
+                            },
+                            "capa": {
+                                "ok": capa.get("ok"),
+                                "returncode": capa.get("returncode"),
+                                "error": capa.get("error"),
+                                "stderr": capa.get("stderr"),
+                                "command": capa.get("command", []),
+                                "matched_rule_count": capa.get("matched_rule_count"),
+                                "top_rules": capa.get("top_rules", []),
+                                "attack_techniques": capa.get("attack_techniques", []),
+                                "mbc_behaviors": capa.get("mbc_behaviors", []),
+                                "capability_flags": capa.get("capability_flags", {}),
+                                "stdout_size": capa.get("stdout_size", capa.get("stdout", "") | length),
+                                "raw_stdout_stored": capa.get("raw_stdout_stored", capa.get("stdout") is not none)
+                            }
                         } | tojson(indent=2) }}</pre>
                 </div>
             </div>
@@ -689,7 +729,8 @@
 
                 <div class="glass-soft rounded-2xl p-4">
                     <p class="text-xs uppercase tracking-[0.18em] text-white/50">APK Tool Summary</p>
-                    <pre class="pretty-pre mt-3 max-h-[420px] overflow-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ {
+                    <pre
+                        class="pretty-pre mt-3 max-h-[420px] overflow-auto rounded-2xl bg-white/8 p-4 text-sm text-white/85">{{ {
                             "jadx": apk.get("jadx", {}),
                             "jadx_output_dir": apk.get("jadx_output_dir"),
                             "structural_evidence": apk.get("structural_evidence", {})
